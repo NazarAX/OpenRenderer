@@ -1,0 +1,3 @@
+C:/Users/Nazarii/OneDrive/Desktop/OpenRenderer/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/Nazarii/OneDrive/Desktop/OpenRenderer/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/Nazarii/OneDrive/Desktop/OpenRenderer/build/Core/CMakeFiles/Core.dir

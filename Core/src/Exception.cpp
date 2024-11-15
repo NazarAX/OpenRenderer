@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 
+
 void checkOpenGLError(const std::string& location, int line) 
 {
     GLenum error = glGetError();

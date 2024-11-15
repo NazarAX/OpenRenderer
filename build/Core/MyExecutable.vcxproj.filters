@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\MouseMovedEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Rendering\Abstractions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Rendering\FrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\Event.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\Events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\KeyEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\MouseButtonEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\MouseMovedEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\MouseScrollEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\WindowCloseEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Events\WindowResizeEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\App\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Assets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Rendering\Abstractions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Rendering\FrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\src\stb\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Nazarii\OneDrive\Desktop\OpenRenderer\Core\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{F2EB5AF5-24A4-37C1-9619-5464FA79B805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{BA5941BE-9885-3AD5-A942-EF73A083AC8F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

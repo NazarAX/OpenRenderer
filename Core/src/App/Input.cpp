@@ -1,5 +1,5 @@
 #include "Input.h"
-#include "App/Window.h" // Assuming the Window class wraps around GLFW
+#include "Window.h" // Assuming the Window class wraps around GLFW
 #include <GLFW/glfw3.h>  // GLFW header for key and mouse input functions
 #include <iostream>
 
