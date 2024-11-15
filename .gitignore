@@ -16,6 +16,7 @@ CMakeOutput.log
 *.sln
 *.vcxproj
 *.vcxproj.user
+*.vcxproj.filters
 
 # Ignore generated files from Visual Studio builds
 *.user
