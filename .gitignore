@@ -1,0 +1,56 @@
+# Ignore the build directory (for out-of-source builds)
+build/
+
+# Ignore Visual Studio-specific files
+.vs/
+.vscode/
+.idea/
+
+# Ignore CMake-specific files
+CMakeFiles/
+CMakeCache.txt
+CMakeError.log
+CMakeOutput.log
+
+# Ignore the Visual Studio solution and project files if you don’t want them in Git (e.g., if using only CMake to configure the build)
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+
+# Ignore generated files from Visual Studio builds
+*.user
+*.userosscache
+*.suo
+*.pdb
+*.idb
+*.ipch
+*.aps
+*.ncb
+*.log
+
+# Ignore library and executable files generated during the build
+*.dll
+*.exe
+*.lib
+*.a
+*.so
+*.dylib
+*.obj
+*.o
+*.lo
+
+# Ignore backup files created by editors (e.g., Vim, Emacs)
+*~
+*.swp
+*.bak
+
+# Ignore package managers (e.g., vcpkg, conan, etc.)
+.vcpkg/
+conan/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+build/
