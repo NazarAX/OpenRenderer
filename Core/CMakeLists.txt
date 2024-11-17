@@ -9,11 +9,12 @@ file(GLOB_RECURSE SOURCES "${SRC_DIR}/*.cpp")
 file(GLOB_RECURSE HEADERS "${SRC_DIR}/*.h")
 
 
-
-
+#Copying assets
+file(COPY ${CMAKE_SOURCE_DIR}/Core/res/ DESTINATION ${CMAKE_BINARY_DIR}/res/)
 
 # Add an executable target with all the source files
 add_executable(Core ${SOURCES} ${HEADERS})
+
 
 target_include_directories(Core PRIVATE "${LIB_DIR}/GLEW/include")
 target_include_directories(Core PRIVATE "${LIB_DIR}/GLFW/include")

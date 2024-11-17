@@ -7,18 +7,10 @@
 #include "App/Input.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <filesystem>
 #include "Rendering/FrameBuffer.h"
 #include "Exception.h"
 #include "Assets.h"
-
-
-static void loadAssets() 
-{
-	Assets::addShader("textureShader", Shader("res/shaders/textureShader.glsl"));
-	Assets::addShader("mvpShader", Shader("res/shaders/mvpShader.glsl"));
-	Assets::addShader("defaultShader", Shader("./res/shaders/defaultShader.glsl"));
-	Assets::addTexture("brick", Texture("res/textures/brick2.jpg"));
-}
 
 
 static void setupGL()
@@ -29,11 +21,9 @@ static void setupGL()
 		std::cerr << "Could not initialize GLEW" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);  // Optional: synchronous messages (blocks until message is processed)
+	glEnable(GL_DEPTH_TEST); // Optional: synchronous messages (blocks until message is processed)
 
-	// Set the debug callback function using a lambda
+
 	glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 		{
 			// Print the debug message
@@ -50,8 +40,6 @@ static void setupGL()
 				std::cerr << "Critical OpenGL Error!" << std::endl;
 			}
 		}, nullptr);
-
-
 }
 
 //Entry point
@@ -70,8 +58,27 @@ int main()
 	std::shared_ptr<Camera> camera = std::make_shared<Camera>(600, 600, 45);
 	camera->setPosition(glm::vec3(0.0f, 0.5f, -3.0f));
 
-	Shader shader = Assets::getShader("defaultShader");
 	
+	float quadVertices[] = {
+		// Position       // TexCoords
+		-1.0f,  1.0f,    0.0f, 0.0f, // Top-left (Y flipped)
+		-1.0f, -1.0f,    0.0f, 1.0f, // Bottom-left
+		 1.0f, -1.0f,    1.0f, 1.0f, // Bottom-right
+		 1.0f,  1.0f,    1.0f, 0.0f  // Top-right (Y flipped)
+	};
+
+	unsigned int quadIndices[] = {
+		0, 1, 2, // First triangle
+		0, 2, 3  // Second triangle
+	};
+
+	VertexArray va = VertexArray(VAData{2, 0, 2}, quadVertices, sizeof(quadVertices));
+	IndexBuffer ib = IndexBuffer(quadIndices, 6);
+	
+	
+
+	Shader shader = Shader("res/shaders/defaultShader.glsl");
+
 	Renderer renderer;
 
 	while (window.Active) 
@@ -81,16 +88,13 @@ int main()
 			if (Input::isKeyDown(KeyCode::S)) camera->move(glm::vec3(0, 0, -0.1f));
 			if (Input::isKeyDown(KeyCode::A)) camera->move(glm::vec3(0.1f, 0, 0.0f));
 			if (Input::isKeyDown(KeyCode::D)) camera->move(glm::vec3(-0.1f, 0, 0));
-
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		renderer.quadVA.Bind();
-		renderer.quadIB.Bind();
-		shader.bind();
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		renderer.drawQuad(shader);
+		
 
 		window.Update();
 	}

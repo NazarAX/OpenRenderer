@@ -17,8 +17,6 @@ out vec4 color; // Output color
 
 void main() {
     color = vec4(1.0, 0.5, 0.0, 1.0); // Use the passed color directly
-    // Alternatively, to set a constant orange color:
-    // color = vec4(1.0, 0.5, 0.0, 1.0);
 }
 
 #endif

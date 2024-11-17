@@ -1,6 +1,5 @@
 #include "Exception.h"
 
-
 #include <GL/glew.h>
 
 

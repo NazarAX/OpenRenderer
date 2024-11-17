@@ -30,11 +30,7 @@ CMakeOutput.log
 *.log
 
 # Ignore library and executable files generated during the build
-*.dll
 *.exe
-*.lib
-*.a
-*.so
 *.dylib
 *.obj
 *.o
@@ -52,5 +48,3 @@ conan/
 # Ignore system files
 .DS_Store
 Thumbs.db
-
-build/

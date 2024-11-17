@@ -1,41 +1,28 @@
 #pragma once
-#include <map>
+#include <unordered_map>
 #include "Rendering/Abstractions.h"
+#include <string>
 #include <iostream>
 
-namespace Assets 
+
+
+template <class T>
+class AssetLibrary
 {
-	static std::map<std::string, Shader> shaders;
-	static std::map<std::string, Texture> textures;
+private:
+	std::unordered_map<std::string, T> assetMap;
 
-	static void addShader(const std::string& name, const Shader& shader) {
-		shaders[name] = shader;
-	}
-	
-	static void addTexture(const std::string& name, const Texture& texture) 
+public:
+	AssetLibrary();
+	~AssetLibrary();
+
+	void Load(const T& asset, const std::string& name) 
 	{
-		textures[name] = texture;
+		assetMap[name] = asset;
 	}
 
-	static Shader getShader(const std::string& name) 
+	T Get(const std::string& name)
 	{
-		auto it = shaders.find(name);
-
-		if (it != shaders.end())
-			return it->second;
-
-		std::cerr << "Error: Shader " << name << " not found" << std::endl;
+		return assetMap[name];
 	}
-
-	static Texture getTexture(const std::string& name)
-	{
-		auto it = textures.find(name);
-
-		if (it != textures.end())
-			return it->second;
-
-
-		std::cerr << "Error: Texture " << name << " not found" << std::endl;
-	}
-
-}
+};
