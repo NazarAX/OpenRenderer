@@ -11,61 +11,6 @@
 
 
 
-VertexArray::VertexArray(VAData layout, float* data, unsigned int size)
-{
-	glGenVertexArrays(1, &id);
-	glBindVertexArray(id);
-
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	
-	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-
-	unsigned int stride = sizeof(float) * (layout.colors + layout.coords + layout.normalCoords + layout.texCoords);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, layout.coords, GL_FLOAT, GL_FALSE, stride, 0);
-
-	if (layout.colors)
-	{
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, layout.colors, GL_FLOAT, GL_FALSE, stride, (void*) (sizeof(float) * layout.coords));
-	}
-
-	if (layout.texCoords)
-	{
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, layout.texCoords, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(float) * (layout.coords + layout.colors)));
-	}
-
-	if (layout.normalCoords)
-	{
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, layout.normalCoords, GL_FLOAT, GL_FALSE, stride, (void*)(sizeof(float) * (layout.coords + layout.colors + layout.texCoords)));
-	}
-
-}
-
-
-void VertexArray::Bind()
-{
-	glBindVertexArray(id);
-}
-
-void VertexArray::Unbind()
-{
-	glBindVertexArray(0);
-}
-
-
-
-
-
-
-
-
-
-
 
 
 IndexBuffer::IndexBuffer(unsigned int* data, int count) : count(count)
@@ -104,18 +49,6 @@ Shader::Shader(const std::string& filename)
 	this->id = linkShaders(vertexShader, fragmentShader);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

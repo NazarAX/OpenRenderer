@@ -85,8 +85,10 @@ Renderer::Renderer()
 		0, 2, 3  // Second triangle
 	};
 
-	quadVA = VertexArray(VAData{2, 0, 2}, quadVertices, sizeof(quadVertices));
-	quadIB = IndexBuffer(quadIndices, 6);
+	VertexLayout layout = {2, 0, 2};  // Position: 2 floats, TexCoords: 2 floats
+	// quadVA = VertexArray(quadVertices, sizeof(quadVertices), layout);
+	// quadIB = IndexBuffer(quadIndices, 6);
+
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(1.0f, 1.0f); // Adjust the values as needed
 }

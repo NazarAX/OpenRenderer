@@ -2,47 +2,8 @@
 #include <memory.h>
 #include <string>
 #include <glm/glm.hpp>
+#include <vector>
 
-
-
-
-/*
-	layout of vertex array
-*/
-struct VAData
-{
-	unsigned int coords = 0;
-	unsigned int colors = 0;
-	unsigned int texCoords = 0;
-	unsigned int normalCoords = 0;
-};
-/*
-	Minimalistic vertex array abstraction
-*/
-
-class VertexArray
-{
-private:
-	unsigned int id;
-	unsigned int vbo;
-	VAData layout;
-
-public:
-	VertexArray() {}
-	VertexArray(VAData layout, float* data, unsigned int size);
-	~VertexArray() {} 
-
-public:
-	void Bind();
-	void Unbind();
-
-	unsigned int GetId() { return id; }
-	unsigned int GetVBO() { return vbo; }
-};
-
-/*
-	Minimalistic index buffer abstraction
-*/
 
 class IndexBuffer
 {

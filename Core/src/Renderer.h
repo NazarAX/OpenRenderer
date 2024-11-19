@@ -1,5 +1,6 @@
 #pragma once
 #include "Rendering/Abstractions.h"
+#include "Rendering/Buffers.h"
 #include <memory>
 
 struct Transform
