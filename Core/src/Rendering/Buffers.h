@@ -98,3 +98,22 @@ public:
 
 
 
+class IndexBuffer
+{
+private:
+	unsigned int id;
+	int count;
+public:
+	IndexBuffer() {}
+	IndexBuffer(unsigned int* indices, int count);
+	~IndexBuffer() {}
+
+public:
+	void Bind();
+	void Unbind();
+	unsigned int GetId() const { return id; }
+	float GetCount() const { return count; };
+};
+
+
+

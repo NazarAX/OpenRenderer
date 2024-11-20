@@ -15,22 +15,35 @@ file(COPY ${CMAKE_SOURCE_DIR}/Core/res/ DESTINATION ${CMAKE_BINARY_DIR}/res/)
 # Add an executable target with all the source files
 add_executable(Core ${SOURCES} ${HEADERS})
 
+add_subdirectory("${LIB_DIR}/Glad")
+add_subdirectory("${LIB_DIR}/GLFW")
 
-target_include_directories(Core PRIVATE "${LIB_DIR}/GLEW/include")
+
+target_include_directories(Core PRIVATE "${LIB_DIR}/Glad/include")
 target_include_directories(Core PRIVATE "${LIB_DIR}/GLFW/include")
 target_include_directories(Core PRIVATE "${LIB_DIR}/GLM")
 target_include_directories(Core PRIVATE "${SRC_DIR}")
 
-target_link_directories(Core PRIVATE
-    "${LIB_DIR}/GLEW/lib"
-    "${LIB_DIR}/GLFW/lib"
-)
 
 # Link libraries (adjust these to match your actual library file names)
 target_link_libraries(Core PRIVATE
-    glew32s   # GLEW static
-    glfw3     # GLFW
-    opengl32  # OpenGL (Windows)
+    glad   # GLEW static
+    glfw     # GLFW
 )
+
+if (APPLE)
+target_link_libraries(Core PRIVATE
+    "-framework OpenGL"
+    "-framework Cocoa"
+    "-framework IOKit"
+    "-framework QuartzCore"
+)
+endif()
+
+if (WIN32)
+target_link_libraries(Core PRIVATE
+    opengl32
+)
+endif()
 
 target_compile_definitions(Core PRIVATE GLEW_STATIC)

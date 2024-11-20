@@ -1,5 +1,5 @@
 #include "Abstractions.h"
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <memory.h>
 #include "../Utils.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -10,26 +10,6 @@
 
 
 
-
-
-
-IndexBuffer::IndexBuffer(unsigned int* data, int count) : count(count)
-{
-	glGenBuffers(1, &id);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), data, GL_STATIC_DRAW);
-}
-
-void IndexBuffer::Bind()
-{
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-}
-
-
-void IndexBuffer::Unbind()
-{
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
 
 
 Shader::Shader(const std::string& filename)

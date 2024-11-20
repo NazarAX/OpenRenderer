@@ -1,7 +1,7 @@
 #include "App/Window.h"
 #include "Rendering/Abstractions.h"
 #include "Renderer.h"
-#include "GL/glew.h"
+#include <glad/glad.h>
 #include "model.embed"
 #include <memory>
 #include "App/Input.h"
@@ -16,31 +16,34 @@
 
 static void setupGL()
 {
+    
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD" << std::endl;
+        exit(EXIT_FAILURE);
+    }
 
-	if (glewInit() != GLEW_OK)
-	{
-		std::cerr << "Could not initialize GLEW" << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	glEnable(GL_DEPTH_TEST); // Optional: synchronous messages (blocks until message is processed)
-	glEnable(GL_DEBUG_OUTPUT);
+    const GLubyte* renderer = glGetString(GL_RENDERER);
+    const GLubyte* version = glGetString(GL_VERSION);
 
-	glDebugMessageCallback([](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
-		{
-			// Print the debug message
-			std::cout << "OpenGL Debug Message: " << message << std::endl;
+    std::cout << "Renderer: " << renderer << std::endl;
+    std::cout << "OpenGL version supported: " << version << std::endl;
 
-			// Optionally, you can also print additional details about the message
-			std::cout << "Source: " << source << std::endl;
-			std::cout << "Type: " << type << std::endl;
-			std::cout << "ID: " << id << std::endl;
-			std::cout << "Severity: " << severity << std::endl;
+    
+    #ifdef DEBUG
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); // Optional: ensures messages are processed immediately
+        glDebugMessageCallback(
+            [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+                std::cerr << "OpenGL Debug Message: " << message << "\n"
+                        << "Source: " << source << ", Type: " << type
+                        << ", ID: " << id << ", Severity: " << severity << std::endl;
 
-			// You can add more custom handling based on the message source, type, or severity
-			if (severity == GL_DEBUG_SEVERITY_HIGH) {
-				std::cerr << "Critical OpenGL Error!" << std::endl;
-			}
-		}, nullptr);
+                if (severity == GL_DEBUG_SEVERITY_HIGH) {
+                    std::cerr << "Critical OpenGL Error!" << std::endl;
+                }
+            },
+            nullptr);
+    #endif
 }
 
 int main() 

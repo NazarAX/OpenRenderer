@@ -1,6 +1,6 @@
 #include "Exception.h"
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 
 void checkOpenGLError(const std::string& location, int line) 
