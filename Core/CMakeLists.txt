@@ -9,11 +9,22 @@ file(GLOB_RECURSE SOURCES "${SRC_DIR}/*.cpp")
 file(GLOB_RECURSE HEADERS "${SRC_DIR}/*.h")
 
 
-#Copying assets
-file(COPY ${CMAKE_SOURCE_DIR}/Core/res/ DESTINATION ${CMAKE_BINARY_DIR}/res/)
 
 # Add an executable target with all the source files
 add_executable(Core ${SOURCES} ${HEADERS})
+
+
+add_custom_command(
+    TARGET Core
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+        ${CMAKE_BINARY_DIR}/Core/$<CONFIG>/res/
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/Core/res
+        ${CMAKE_BINARY_DIR}/Core/$<CONFIG>/res/
+    COMMENT "Copying resource files to ${CMAKE_BINARY_DIR}/Core/res/$<CONFIG>"
+)
+
 
 add_subdirectory("${LIB_DIR}/Glad")
 add_subdirectory("${LIB_DIR}/GLFW")

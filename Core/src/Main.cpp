@@ -14,6 +14,7 @@
 #include "Assets.h"
 
 
+
 static void setupGL()
 {
     
@@ -56,7 +57,7 @@ int main()
     std::shared_ptr<Camera> camera = std::make_shared<Camera>(600, 600, 45);
     camera->setPosition(glm::vec3(0.0f, 0.5f, -3.0f));
 
-    Shader shader("C:/Users/Nazarii/OneDrive/Desktop/OpenRenderer/build/res/shaders/defaultShader.glsl");
+    Shader shader("res/shaders/defaultShader.glsl");
 
     float quadVertices[] = {
         // Position       // TexCoords
