@@ -41,7 +41,7 @@ static VertexData ParseMesh(aiMesh* mesh, const aiScene* scene) {
     return vertexData;
 }
 
-static Mesh GenerateMesh(VertexData& data, const std::string& name)
+static Mesh GenerateMesh(VertexData& data, Material material, Transform transform, const std::string& name)
 {
     VertexArray vertexArray;
     VertexBuffer positionBuffer = VertexBuffer(data.Positions.data(), data.Positions.size()* sizeof(glm::vec3));
@@ -55,18 +55,19 @@ static Mesh GenerateMesh(VertexData& data, const std::string& name)
     vertexArray.AddBuffer(normalsBuffer, NormalCoords, 3);
     vertexArray.AddBuffer(uvBuffer, TexCoords, 2);
 
-    return Mesh{vertexArray, indexBuffer, name};
+    return Mesh{vertexArray, indexBuffer, material, name, transform};
 }
 
 
 static void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Mesh>& meshes)
 {
+
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
         VertexData vertexData = ParseMesh(mesh, scene);
 
-        meshes.push_back(GenerateMesh(vertexData, mesh->mName.C_Str()));
+        meshes.push_back(GenerateMesh(vertexData, Material{}, Transform{}, mesh->mName.C_Str()));
     }
 
     //children nodes

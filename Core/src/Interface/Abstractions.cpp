@@ -15,18 +15,18 @@
 Shader::Shader(const std::string& filename)
 {
 	std::string src = File::readFile(filename);
-	vertex = parseShader(src, ShaderType::Vertex);
-	fragment = parseShader(src, ShaderType::Fragment);
+	vertex = ParseShader(src, ShaderType::Vertex);
+	fragment = ParseShader(src, ShaderType::Fragment);
 
 	size_t start = filename.find_last_of("/") + 1;
 	size_t end = filename.find_last_of(".");
 	this->name = filename.substr(start, end - start);
 
 
-	unsigned int vertexShader = compileShader(vertex, name, ShaderType::Vertex);
-	unsigned int fragmentShader = compileShader(fragment, name, ShaderType::Fragment);
+	unsigned int vertexShader = CompileShader(vertex, name, ShaderType::Vertex);
+	unsigned int fragmentShader = CompileShader(fragment, name, ShaderType::Fragment);
 
-	this->id = linkShaders(vertexShader, fragmentShader);
+	this->id = LinkShaders(vertexShader, fragmentShader);
 
 }
 
@@ -35,13 +35,13 @@ Shader::Shader(const std::string& filename)
 
 Shader::Shader(const std::string& _vertex, const std::string& _fragment, const std::string& _name) : vertex(_vertex), fragment(_fragment), name(_name)
 {
-	unsigned int vertexShader = compileShader(_vertex, name, ShaderType::Vertex);
-	unsigned int fragmentShader = compileShader(_fragment, name, ShaderType::Fragment);
+	unsigned int vertexShader = CompileShader(_vertex, name, ShaderType::Vertex);
+	unsigned int fragmentShader = CompileShader(_fragment, name, ShaderType::Fragment);
 
-	this->id = linkShaders(vertexShader, fragmentShader);
+	this->id = LinkShaders(vertexShader, fragmentShader);
 }
 
-std::string Shader::parseShader(const std::string& src, ShaderType type)
+std::string Shader::ParseShader(const std::string& src, ShaderType type)
 {
 	std::string define = (type == ShaderType::Vertex) ? "#define VERTEX\n" : "#define FRAGMENT\n";
 	std::stringstream stream;
@@ -51,7 +51,7 @@ std::string Shader::parseShader(const std::string& src, ShaderType type)
 	return stream.str();
 }
 
-unsigned int Shader::compileShader(std::string _src, const std::string& name, ShaderType type)
+unsigned int Shader::CompileShader(std::string _src, const std::string& name, ShaderType type)
 {
 	GLuint shaderType = (type == Vertex) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
 
@@ -74,7 +74,7 @@ unsigned int Shader::compileShader(std::string _src, const std::string& name, Sh
 }
 
 
-unsigned int Shader::linkShaders(unsigned int vertex, unsigned int fragment)
+unsigned int Shader::LinkShaders(unsigned int vertex, unsigned int fragment)
 {
 	unsigned int id = glCreateProgram();
 	glAttachShader(id, vertex);
@@ -103,75 +103,75 @@ void Shader::Unbind() const {
 
 
 
-void Shader::setUniform1i(const std::string& name, int val) {
+void Shader::SetUniform1i(const std::string& name, int val) {
 	glUniform1i(glGetUniformLocation(id, name.c_str()), val);
 }
 
-void Shader::setUniform2i(const std::string& name, const glm::ivec2& value) {
+void Shader::SetUniform2i(const std::string& name, const glm::ivec2& value) {
 	glUniform2i(glGetUniformLocation(id, name.c_str()), value.x, value.y);
 }
 
-void Shader::setUniform3i(const std::string& name, const glm::ivec3& value) {
+void Shader::SetUniform3i(const std::string& name, const glm::ivec3& value) {
 	glUniform3i(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z);
 }
 
-void Shader::setUniform4i(const std::string& name, const glm::ivec4& value) {
+void Shader::SetUniform4i(const std::string& name, const glm::ivec4& value) {
 	glUniform4i(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z, value.w);
 }
 
-void Shader::setUniform1ui(const std::string& name, unsigned int val) {
+void Shader::SetUniform1ui(const std::string& name, unsigned int val) {
 	glUniform1ui(glGetUniformLocation(id, name.c_str()), val);
 }
 
-void Shader::setUniform2ui(const std::string& name, const glm::uvec2& value) {
+void Shader::SetUniform2ui(const std::string& name, const glm::uvec2& value) {
 	glUniform2ui(glGetUniformLocation(id, name.c_str()), value.x, value.y);
 }
 
-void Shader::setUniform3ui(const std::string& name, const glm::uvec3& value) {
+void Shader::SetUniform3ui(const std::string& name, const glm::uvec3& value) {
 	glUniform3ui(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z);
 }
 
-void Shader::setUniform4ui(const std::string& name, const glm::uvec4& value) {
+void Shader::SetUniform4ui(const std::string& name, const glm::uvec4& value) {
 	glUniform4ui(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z, value.w);
 }
 
-void Shader::setUniform1f(const std::string& name, float val) {
+void Shader::SetUniform1f(const std::string& name, float val) {
 	glUniform1f(glGetUniformLocation(id, name.c_str()), val);
 }
 
-void Shader::setUniform2f(const std::string& name, const glm::vec2& value) {
+void Shader::SetUniform2f(const std::string& name, const glm::vec2& value) {
 	glUniform2f(glGetUniformLocation(id, name.c_str()), value.x, value.y);
 }
 
-void Shader::setUniform3f(const std::string& name, const glm::vec3& value) {
+void Shader::SetUniform3f(const std::string& name, const glm::vec3& value) {
 	glUniform3f(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z);
 }
 
-void Shader::setUniform4f(const std::string& name, const glm::vec4& value) {
+void Shader::SetUniform4f(const std::string& name, const glm::vec4& value) {
 	glUniform4f(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z, value.w);
 }
 
-void Shader::setUniformMatrix2fv(const std::string& name, const glm::mat2& matrix) {
+void Shader::SetUniformMatrix2fv(const std::string& name, const glm::mat2& matrix) {
 	glUniformMatrix2fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::setUniformMatrix3fv(const std::string& name, const glm::mat3& matrix) {
+void Shader::SetUniformMatrix3fv(const std::string& name, const glm::mat3& matrix) {
 	glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::setUniformMatrix4fv(const std::string& name, const glm::mat4& matrix) {
+void Shader::SetUniformMatrix4fv(const std::string& name, const glm::mat4& matrix) {
 	glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::setUniform1iv(const std::string& name, int count, const int* values) {
+void Shader::SetUniform1iv(const std::string& name, int count, const int* values) {
 	glUniform1iv(glGetUniformLocation(id, name.c_str()), count, values);
 }
 
-void Shader::setUniform1fv(const std::string& name, int count, const float* values) {
+void Shader::SetUniform1fv(const std::string& name, int count, const float* values) {
 	glUniform1fv(glGetUniformLocation(id, name.c_str()), count, values);
 }
 
-void Shader::setUniform3fv(const std::string& name, int count, const glm::vec3* values) {
+void Shader::SetUniform3fv(const std::string& name, int count, const glm::vec3* values) {
 	glUniform3fv(glGetUniformLocation(id, name.c_str()), count, glm::value_ptr(*values));
 }
 
@@ -206,14 +206,14 @@ Texture::Texture(std::string path)
 
 }
 
-void Texture::bind(unsigned int tex)
+void Texture::Bind(unsigned int tex)
 {
 	textureId = tex;
 	glActiveTexture(GL_TEXTURE0 + tex);
 	glBindTexture(GL_TEXTURE_2D, id);
 }
 
-void Texture::unbind()
+void Texture::Unbind()
 {
 	glBindTexture(GL_TEXTURE_2D, id);
 }

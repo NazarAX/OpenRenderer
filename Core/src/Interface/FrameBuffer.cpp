@@ -26,21 +26,21 @@ FrameBuffer::~FrameBuffer()
 	glDeleteTextures(1, &textureId);
 }
 
-void FrameBuffer::bind()
+void FrameBuffer::Bind()
 {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, id);
 }
 
-void FrameBuffer::unbind()
+void FrameBuffer::Unbind()
 {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::update(int width, int height)
+void FrameBuffer::Update(int width, int height)
 {
-	bind();
+	Bind();
 
 	// Rebind the existing texture instead of creating a new one
 	glBindTexture(GL_TEXTURE_2D, textureId);
@@ -49,7 +49,7 @@ void FrameBuffer::update(int width, int height)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete after resize!" << std::endl;
 
-	unbind();
+	Unbind();
 	this->width = width;
 	this->height = height;
 }

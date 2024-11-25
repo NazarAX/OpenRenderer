@@ -11,9 +11,7 @@ file(GLOB_RECURSE HEADERS "${SRC_DIR}/*.h")
 
 
 # Add an executable target with all the source files
-add_executable(Core ${SOURCES} ${HEADERS}
-        src/Model.cpp
-        src/Model.h)
+add_executable(Core ${SOURCES} ${HEADERS})
 
 #file(COPY ${CMAKE_SOURCE_DIR}/Core/res DESTINATION  ${CMAKE_BINARY_DIR}/Core)
 #

@@ -1,17 +1,17 @@
-#include "App/Window.h"
-#include "Rendering/Abstractions.h"
-#include "Renderer.h"
+#include "System/Window.h"
+#include "Interface/Abstractions.h"
+#include "Rendering/Renderer.h"
 #include <glad/glad.h>
 #include <memory>
-#include "App/Input.h"
+#include "System/Input.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <filesystem>
-#include "Rendering/FrameBuffer.h"
-#include "Rendering/Buffers.h"
-#include "Exception.h"
+#include "Interface/FrameBuffer.h"
+#include "Interface/Buffers.h"
+#include "Interface/Exception.h"
 #include "Assets.h"
-#include "Model.h"
+#include "Rendering/Model.h"
 
 
 static void setupGL()
@@ -46,21 +46,6 @@ static void setupGL()
     #endif
 }
 
-static void updateCamera(std::shared_ptr<Camera> camera) {
-
-
-    // Handle input
-    if (Input::isKeyDown(KeyCode::W)) camera->move(camera->getFront() * 0.1f);
-    if (Input::isKeyDown(KeyCode::S)) camera->move(-camera->getFront() * 0.1f );
-    if (Input::isKeyDown(KeyCode::D)) camera->move(camera->getRight() * 0.1f);
-    if (Input::isKeyDown(KeyCode::A)) camera->move(-camera->getRight() * 0.1f);
-
-
-    if (Input::isMouseButtonPressed(MouseCode::Button1) )
-    {
-        camera->turn(Input::getMouseDelta().x * 2, Input::getMouseDelta().y * 2);
-    }
-}
 std::shared_ptr<Camera> camera;
 
 static void handleEvent(Events::Event& e)
@@ -72,7 +57,7 @@ static void handleEvent(Events::Event& e)
     }
 }
 
-int main() 
+int main()
 {
 
     Window window({ 1920, 1080, "Name" });
@@ -80,53 +65,31 @@ int main()
     Window::currentWindow = &window;
 
     setupGL();
-    //
+
     glEnable(GL_DEPTH_TEST);
 
     camera = std::make_shared<Camera>(600, 600, 45);
     camera->setPosition(glm::vec3(0.0f, 0.5f, -3.0f));
 
-
-    Shader shader("res/shaders/modelShader.glsl");
-
+    CameraController cameraController(camera);
 
     Model model;
     model.LoadFromFile("res/models/snail.obj");
-
-    Texture texture("res/textures/snail_color.png");
-    texture.bind();
 
 
     Renderer renderer;
 
 
-    shader.Bind();
 
-    
-    while (window.Active) 
-    {    
+    while (window.Active)
+    {
         Input::update(); // Update input system, including mouse positions
 
-        // Clear buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        renderer.BeginScene(camera);
+        renderer.DrawModel(model);
 
 
-        updateCamera(camera);
-
-        //renderer.beginScene(camera);
-        //renderer.drawQuad(defaultShader, { {0, 0, 0} });
-
-        shader.Bind();
-        shader.setUniformMatrix4fv("uModel", glm::mat4(1.0f));
-        shader.setUniformMatrix4fv("uView", camera->getView());
-        shader.setUniformMatrix4fv("uProjection", camera->getProjection());
-        shader.setUniformMatrix4fv("uTexture", texture.getId());
-
-        renderer.beginScene(camera);
-        renderer.drawModel(model);
-
-
+        cameraController.UpdateInputs();
         // Update window
         window.Update();
 	}
