@@ -29,6 +29,7 @@ struct VertexData
 	std::vector<glm::vec3> Positions;
 	std::vector<glm::vec2> TexCoords;
 	std::vector<glm::vec3> Normals;
+	std::vector<unsigned int> Indices;
 };
 
 class VertexBuffer {
@@ -56,6 +57,7 @@ public:
 	void Unbind() const;
 
 	void AddBuffer(const VertexBuffer& buffer, BufferIndex bindMode, unsigned int size);
+	void AddBuffer(const std::vector<float>& data, BufferIndex bindMode, unsigned int size);
 
 
 	unsigned int GetRendererID() const { return m_RendererID; }

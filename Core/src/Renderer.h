@@ -20,6 +20,7 @@ private:
 	glm::vec3 front;
 	glm::vec3 up;
 
+	float zoom;
 	float pitch;
 	float yaw;
 
@@ -35,6 +36,7 @@ public:
 	void move(glm::vec3 delta);
 	void setPosition(glm::vec3 _pos);
 
+	void setZoom(float zoom);
 	void setPitch(float pitch);
 	void setYaw(float yaw);
 	void turn(float delta_pitch, float delta_yaw);

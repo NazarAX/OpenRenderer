@@ -7,7 +7,7 @@
 
 
 
-
+#define DEBUG
 /*
  *	Vertex Buffer implementation
  *
@@ -96,6 +96,17 @@ void VertexArray::AddBuffer(const VertexBuffer &buffer, BufferIndex bindMode, un
 #ifdef DEBUG
 	std::cout << "Adding attrib : " << bindMode << " to array :" << m_RendererID << std::endl;
 #endif
+}
+
+void VertexArray::AddBuffer(const std::vector<float> &data, BufferIndex bindMode, unsigned int size)
+{
+	Bind();
+	unsigned int vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, size, data.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(bindMode);
+	glVertexAttribPointer(bindMode, size, GL_FLOAT, GL_FALSE, sizeof(float) * size, 0);
 }
 
 

@@ -2,7 +2,6 @@
 #include "Rendering/Abstractions.h"
 #include "Renderer.h"
 #include <glad/glad.h>
-#include "model.embed"
 #include <memory>
 #include "App/Input.h"
 #include <GLFW/glfw3.h>
@@ -75,23 +74,26 @@ static void handleEvent(Events::Event& e)
 
 int main() 
 {
-    Window window({ 600, 600, "Name" });
+
+    Window window({ 1920, 1080, "Name" });
     window.SetEventCallback(handleEvent);
     Window::currentWindow = &window;
 
     setupGL();
+    //
+    glEnable(GL_DEPTH_TEST);
 
     camera = std::make_shared<Camera>(600, 600, 45);
     camera->setPosition(glm::vec3(0.0f, 0.5f, -3.0f));
 
+
     Shader shader("res/shaders/modelShader.glsl");
-    Shader defaultShader("res/shaders/defaultShader.glsl");
 
 
     Model model;
-    model.LoadFromFile("res/models/scene.gltf");
+    model.LoadFromFile("res/models/snail.obj");
 
-    Texture texture("res/textures/DefaultMaterial_baseColor.jpeg");
+    Texture texture("res/textures/snail_color.png");
     texture.bind();
 
 
@@ -105,7 +107,6 @@ int main()
     {    
         Input::update(); // Update input system, including mouse positions
 
-
         // Clear buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -117,7 +118,6 @@ int main()
         //renderer.drawQuad(defaultShader, { {0, 0, 0} });
 
         shader.Bind();
-        shader.setUniform1f("uCol", glfwGetTime());
         shader.setUniformMatrix4fv("uModel", glm::mat4(1.0f));
         shader.setUniformMatrix4fv("uView", camera->getView());
         shader.setUniformMatrix4fv("uProjection", camera->getProjection());
@@ -125,7 +125,6 @@ int main()
 
         renderer.beginScene(camera);
         renderer.drawModel(model);
-
 
 
         // Update window

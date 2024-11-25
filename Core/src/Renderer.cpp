@@ -8,13 +8,13 @@
 #include <glm/gtx/string_cast.hpp>
 #include <vector>
 #include "Exception.h"
-#define USE_FRAMEBUFFER
+
 
 
 
 
 Camera::Camera(float w, float h, float fov) :
-	pos(0, 0, 0), pitch(0), yaw(90), up(0, 1, 0)
+	pos(0, 0, 0), pitch(0), yaw(90), up(0, 1, 0), zoom(2)
 {
 	reset(w, h, fov=90);
 }
@@ -24,8 +24,6 @@ void Camera::updateView()
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-	std::cout << front.x << ", " << front.y << ", " << front.z << std::endl;
 
 	glm::vec3 target = pos + glm::normalize(front); // Assuming the camera looks down the negative Z-axis
 
@@ -39,13 +37,18 @@ void Camera::reset(float width, float height, float fov) {
 	float farPlane = 100.0f; // Far clipping plane
 
 	float aspectRatio = (float)width / (float)height;
-	this->projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+	this->projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane) * zoom;
 }
 
 void Camera::setPosition(glm::vec3 _pos)
 {
 	this->pos = _pos;
 	updateView();
+}
+
+void Camera::setZoom(float zoom)
+{
+	this->zoom = zoom;
 }
 
 void Camera::setYaw(float _yaw)
@@ -183,7 +186,8 @@ void Renderer::drawModel(const Model& model)
 {
 	std::vector<Mesh> meshes = model.GetMeshes();
 
-	for (Mesh mesh : meshes) {
+	for (Mesh mesh : meshes)
+	{
 		mesh.vertexArray.Bind();
 		mesh.indexBuffer.Bind();
 
