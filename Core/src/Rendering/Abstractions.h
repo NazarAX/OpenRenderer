@@ -56,8 +56,8 @@ public:
 	void setUniform1fv(const std::string& name, int count, const float* values);
 	void setUniform3fv(const std::string& name, int count, const glm::vec3* values);
 
-	void bind();
-	void unbind();
+	void Bind() const;
+	void Unbind() const;
 
 
 	inline std::string getName() { return this->name; }

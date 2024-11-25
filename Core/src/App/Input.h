@@ -156,10 +156,15 @@ enum KeyCode
 
 namespace Input
 {
+	static glm::vec2 deltaMousePos = glm::vec2(0, 0);
+	static glm::vec2 mousePos = glm::vec2(0, 0);
+
 	bool isKeyDown(KeyCode);
 	bool isMouseButtonPressed(MouseCode);
-	float getMouseX();
-	float getMouseY();
+
+	glm::vec2 getMouseDelta();
 	glm::vec2 getMousePos();
+
+	void update();
 };
 

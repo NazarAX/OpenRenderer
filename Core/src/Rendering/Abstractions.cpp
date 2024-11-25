@@ -93,12 +93,10 @@ unsigned int Shader::linkShaders(unsigned int vertex, unsigned int fragment)
 }
 
 
-void Shader::bind()
-{
+void Shader::Bind() const {
 	glUseProgram(id);
 }
-void Shader::unbind()
-{
+void Shader::Unbind() const {
 	glUseProgram(0);
 }
 

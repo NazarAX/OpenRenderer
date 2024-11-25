@@ -12,7 +12,7 @@
 #include "Rendering/Buffers.h"
 #include "Exception.h"
 #include "Assets.h"
-
+#include "Model.h"
 
 
 static void setupGL()
@@ -30,7 +30,7 @@ static void setupGL()
     std::cout << "OpenGL version supported: " << version << std::endl;
 
     
-    #ifdef DEBUG
+    #ifdef DEBUG_GL
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); // Optional: ensures messages are processed immediately
         glDebugMessageCallback(
@@ -47,56 +47,86 @@ static void setupGL()
     #endif
 }
 
+static void updateCamera(std::shared_ptr<Camera> camera) {
+
+
+    // Handle input
+    if (Input::isKeyDown(KeyCode::W)) camera->move(camera->getFront() * 0.1f);
+    if (Input::isKeyDown(KeyCode::S)) camera->move(-camera->getFront() * 0.1f );
+    if (Input::isKeyDown(KeyCode::D)) camera->move(camera->getRight() * 0.1f);
+    if (Input::isKeyDown(KeyCode::A)) camera->move(-camera->getRight() * 0.1f);
+
+
+    if (Input::isMouseButtonPressed(MouseCode::Button1) )
+    {
+        camera->turn(Input::getMouseDelta().x * 2, Input::getMouseDelta().y * 2);
+    }
+}
+std::shared_ptr<Camera> camera;
+
+static void handleEvent(Events::Event& e)
+{
+    if (e.GetType() == Events::Event::EventType::WindowResizeEvent)
+    {
+        Events::WindowResizeEvent& resizeEvent = (Events::WindowResizeEvent&)e;
+        camera->reset(resizeEvent.GetWidth(), resizeEvent.GetHeight());
+    }
+}
+
 int main() 
 {
     Window window({ 600, 600, "Name" });
+    window.SetEventCallback(handleEvent);
     Window::currentWindow = &window;
 
     setupGL();
 
-    std::shared_ptr<Camera> camera = std::make_shared<Camera>(600, 600, 45);
+    camera = std::make_shared<Camera>(600, 600, 45);
     camera->setPosition(glm::vec3(0.0f, 0.5f, -3.0f));
 
-    Shader shader("res/shaders/defaultShader.glsl");
+    Shader shader("res/shaders/modelShader.glsl");
+    Shader defaultShader("res/shaders/defaultShader.glsl");
 
-    float quadVertices[] = {
-        // Position       // TexCoords
-        -1.0f,  1.0f,    0.0f, 0.0f, // Top-left (Y flipped)
-        -1.0f, -1.0f,    0.0f, 1.0f, // Bottom-left
-         1.0f, -1.0f,    1.0f, 1.0f, // Bottom-right
-         1.0f,  1.0f,    1.0f, 0.0f  // Top-right (Y flipped)
-    };
 
-    unsigned int quadIndices[] = {
-        0, 1, 2, // First triangle
-        0, 2, 3  // Second triangle
-    };
+    Model model;
+    model.LoadFromFile("res/models/scene.gltf");
+
+    Texture texture("res/textures/DefaultMaterial_baseColor.jpeg");
+    texture.bind();
+
+
+    Renderer renderer;
+
+
+    shader.Bind();
+
     
-    VertexArray array(quadVertices, sizeof(quadVertices), VertexLayout{2, 0, 2});
-    IndexBuffer ibo(quadIndices, 6);
-
-
     while (window.Active) 
     {    
-        // Handle input
-        if (Input::isKeyDown(KeyCode::W)) camera->move(glm::vec3(0, 0, 0.1f));
-        if (Input::isKeyDown(KeyCode::S)) camera->move(glm::vec3(0, 0, -0.1f));
-        if (Input::isKeyDown(KeyCode::A)) camera->move(glm::vec3(0.1f, 0, 0.0f));
-        if (Input::isKeyDown(KeyCode::D)) camera->move(glm::vec3(-0.1f, 0, 0));
+        Input::update(); // Update input system, including mouse positions
+
 
         // Clear buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-        
-        array.Bind();
-        ibo.Bind();
-        shader.bind();
 
-        //// Update camera uniform
+        updateCamera(camera);
 
-        //// Draw the quad
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //renderer.beginScene(camera);
+        //renderer.drawQuad(defaultShader, { {0, 0, 0} });
+
+        shader.Bind();
+        shader.setUniform1f("uCol", glfwGetTime());
+        shader.setUniformMatrix4fv("uModel", glm::mat4(1.0f));
+        shader.setUniformMatrix4fv("uView", camera->getView());
+        shader.setUniformMatrix4fv("uProjection", camera->getProjection());
+        shader.setUniformMatrix4fv("uTexture", texture.getId());
+
+        renderer.beginScene(camera);
+        renderer.drawModel(model);
+
+
 
         // Update window
         window.Update();

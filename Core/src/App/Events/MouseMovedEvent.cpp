@@ -4,7 +4,7 @@
 namespace Events
 {
 
-	double MouseMovedEvent::s_PrevX;
-	double MouseMovedEvent::s_PrevY;
+	double MouseMovedEvent::s_PrevX = 0;
+	double MouseMovedEvent::s_PrevY = 0;
 
 }

@@ -5,6 +5,7 @@
 
 namespace Input
 {
+
 	// Check if a specific key is down (pressed)
 	bool isKeyDown(KeyCode key)
 	{
@@ -33,45 +34,37 @@ namespace Input
 		return (state == GLFW_PRESS);
 	}
 
-	// Get the X position of the mouse
-	float getMouseX()
-	{
+
+
+
+
+	void update() {
+
 		if (Window::currentWindow == nullptr)
 		{
 			std::cerr << "Error: currentWindow is nullptr!" << std::endl;
-			return 0.0f;
 		}
 
+		// Update logic
 		double xpos, ypos;
 		glfwGetCursorPos(Window::currentWindow->GetHandle(), &xpos, &ypos);
-		return static_cast<float>(xpos);
+		glm::vec2 currentMousePos = glm::vec2(static_cast<float>(xpos), static_cast<float>(ypos));
+
+		deltaMousePos = currentMousePos - mousePos;
+		deltaMousePos.y = -deltaMousePos.y;
+		mousePos = currentMousePos;
+
 	}
 
-	// Get the Y position of the mouse
-	float getMouseY()
-	{
-		if (Window::currentWindow == nullptr)
-		{
-			std::cerr << "Error: currentWindow is nullptr!" << std::endl;
-			return 0.0f;
-		}
-
-		double xpos, ypos;
-		glfwGetCursorPos(Window::currentWindow->GetHandle(), &xpos, &ypos);
-		return static_cast<float>(ypos);
+	glm::vec2 getMouseDelta() {
+		return deltaMousePos;
 	}
 
-	// Get the mouse position as a glm::vec2
-	glm::vec2 getMousePos()
-	{
-		if (Window::currentWindow == nullptr)
-		{
-			std::cerr << "Error: currentWindow is nullptr!" << std::endl;
-			return glm::vec2(0.0f, 0.0f);
-		}
+	glm::vec2 getMousePos() {
 
-		double xpos, ypos;
-		glfwGetCursorPos(Window::currentWindow->GetHandle(), &xpos, &ypos);
-		return glm::vec2(static_cast<float>(xpos), static_cast<float>(ypos));
+		return mousePos;
 	}
+
+
+
 }

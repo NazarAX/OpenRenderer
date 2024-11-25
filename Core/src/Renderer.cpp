@@ -3,25 +3,32 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
+#include <iostream>
+#include <ostream>
 #include <glm/gtx/string_cast.hpp>
 #include <vector>
 #include "Exception.h"
-
+#define USE_FRAMEBUFFER
 
 
 
 
 Camera::Camera(float w, float h, float fov) :
-	pos(0, 0, 0)
+	pos(0, 0, 0), pitch(0), yaw(90), up(0, 1, 0)
 {
-	reset(w, h, fov);
+	reset(w, h, fov=90);
 }
 
-void Camera::calculateView()
+void Camera::updateView()
 {
-	glm::mat4 translation = glm::translate(glm::mat4(1), this->pos);
-	glm::vec3 target = pos + glm::vec3(0, 0, 1); // Assuming the camera looks down the negative Z-axis
-	glm::vec3 up = glm::vec3(0, 1, 0); // Assuming Y is up
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.y = sin(glm::radians(pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+	std::cout << front.x << ", " << front.y << ", " << front.z << std::endl;
+
+	glm::vec3 target = pos + glm::normalize(front); // Assuming the camera looks down the negative Z-axis
+
 	this->view = glm::lookAt(pos, target, up);
 }
 
@@ -38,7 +45,26 @@ void Camera::reset(float width, float height, float fov) {
 void Camera::setPosition(glm::vec3 _pos)
 {
 	this->pos = _pos;
-	calculateView();
+	updateView();
+}
+
+void Camera::setYaw(float _yaw)
+{
+	this->yaw = _yaw;
+	updateView();
+}
+
+void Camera::turn(float delta_pitch, float delta_yaw)
+{
+	this->pitch += glm::radians(delta_yaw);
+	this->yaw += glm::radians(delta_pitch);
+	updateView();
+}
+
+void Camera::setPitch(float _pitch)
+{
+	this->pitch = _pitch;
+	updateView();
 }
 
 glm::mat4 Camera::getModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
@@ -62,7 +88,7 @@ glm::mat4 Camera::getModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 sca
 void Camera::move(glm::vec3 _pos)
 {
 	this->pos += _pos;
-	calculateView();
+	updateView();
 }
 
 
@@ -72,12 +98,20 @@ void Camera::move(glm::vec3 _pos)
 
 Renderer::Renderer()
 {
+
 	float quadVertices[] = {
-		// Position       // TexCoords
-		-1.0f,  1.0f,    0.0f, 0.0f, // Top-left (Y flipped)
-		-1.0f, -1.0f,    0.0f, 1.0f, // Bottom-left
-		 1.0f, -1.0f,    1.0f, 1.0f, // Bottom-right
-		 1.0f,  1.0f,    1.0f, 0.0f  // Top-right (Y flipped)
+		// Position
+		-1.0f,  1.0f,
+		-1.0f, -1.0f,
+		 1.0f, -1.0f,
+		 1.0f,  1.0f,
+	};
+
+	float quadUV[] ={
+		0.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f
 	};
 
 	unsigned int quadIndices[] = {
@@ -85,12 +119,17 @@ Renderer::Renderer()
 		0, 2, 3  // Second triangle
 	};
 
-	VertexLayout layout = {2, 0, 2};  // Position: 2 floats, TexCoords: 2 floats
-	// quadVA = VertexArray(quadVertices, sizeof(quadVertices), layout);
-	// quadIB = IndexBuffer(quadIndices, 6);
+	quadIB = IndexBuffer(quadIndices, 6);
+	VertexBuffer uvBuffer =VertexBuffer(quadUV, sizeof(quadUV));
+	VertexBuffer vertBuffer = VertexBuffer(quadVertices, sizeof(quadVertices));
+
+	quadVA.AddBuffer(vertBuffer, Coordinates, 2);
+	quadVA.AddBuffer(uvBuffer, TexCoords, 2);
+
 
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(1.0f, 1.0f); // Adjust the values as needed
+
 }
 
 
@@ -98,7 +137,7 @@ Renderer::Renderer()
 void Renderer::draw(VertexArray& va, Shader& shader, IndexBuffer& ib)
 {
 	va.Bind();
-	shader.bind();
+	shader.Bind();
 	ib.Bind();
 
 
@@ -108,7 +147,7 @@ void Renderer::draw(VertexArray& va, Shader& shader, IndexBuffer& ib)
 void Renderer::draw(VertexArray& va, Shader& shader, IndexBuffer& ib, Transform transform)
 {
 	va.Bind();
-	shader.bind();
+	shader.Bind();
 
 	glm::mat4 modelMatrix = Camera::getModel(transform.position, transform.rotation);
 	shader.setUniformMatrix4fv("model", modelMatrix);
@@ -122,21 +161,34 @@ void Renderer::drawQuad(Shader& shader)
 {
 	
 	quadVA.Bind();
-	shader.bind();
+	shader.Bind();
 	quadIB.Bind();
+
 
 	GL(glDrawElements(GL_TRIANGLES, quadIB.GetCount(), GL_UNSIGNED_INT, 0));
 }
 
 void Renderer::drawQuad(Shader& shader, Transform transform)
 {
-	shader.bind();
+	shader.Bind();
 	glm::mat4 modelMatrix = Camera::getModel(transform.position, transform.rotation);
 	shader.setUniformMatrix4fv("model", modelMatrix);
 	shader.setUniformMatrix4fv("view", camera->getView());
 	shader.setUniformMatrix4fv("projection", camera->getProjection());
 
 	draw(quadVA, shader, quadIB);
+}
+
+void Renderer::drawModel(const Model& model)
+{
+	std::vector<Mesh> meshes = model.GetMeshes();
+
+	for (Mesh mesh : meshes) {
+		mesh.vertexArray.Bind();
+		mesh.indexBuffer.Bind();
+
+		glDrawElements(GL_TRIANGLES, mesh.indexBuffer.GetCount(), GL_UNSIGNED_INT, 0);
+	}
 }
 
 void Renderer::beginScene(std::shared_ptr<Camera> camera)
