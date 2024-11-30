@@ -1,7 +1,8 @@
 #include "Renderer.h"
 #include <glad/glad.h>
 #include "Interface/Exception.h"
-
+#include "GLFW/glfw3.h"
+#include <iostream>
 
 
 
@@ -9,6 +10,7 @@
 
 
 Renderer::Renderer()
+	: sceneLight()
 {
 
 	float quadVertices[] = {
@@ -41,7 +43,9 @@ Renderer::Renderer()
 	material.Shader = Shader("res/shaders/modelShader.glsl");
 	material.Texture = Texture("res/textures/snail_color.png");
 
-
+	// light.Color = glm::vec3(1.0f);
+	// light.Position = glm::vec3(1.0f, 1.0f, 1.0f);
+	// light.Intensity = 1;
 
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(1.0f, 1.0f); // Adjust the values as needed
@@ -51,7 +55,7 @@ Renderer::Renderer()
 
 void Renderer::DrawQuad(Shader& shader)
 {
-	
+
 	quadVA.Bind();
 	shader.Bind();
 	quadIB.Bind();
@@ -61,7 +65,7 @@ void Renderer::DrawQuad(Shader& shader)
 }
 
 
-void Renderer::DrawModel(const Model& model)
+void Renderer::DrawModel(const Model& model, const Transform& transform)
 {
 	std::vector<Mesh> meshes = model.GetMeshes();
 
@@ -70,7 +74,7 @@ void Renderer::DrawModel(const Model& model)
 		mesh.vertexArray.Bind();
 		mesh.indexBuffer.Bind();
 
-		SetupShaderUniforms(material, Transform{});
+		SetupShaderUniforms(material, transform);
 
 		glDrawElements(GL_TRIANGLES, mesh.indexBuffer.GetCount(), GL_UNSIGNED_INT, 0);
 	}
@@ -81,12 +85,31 @@ void Renderer::SetupShaderUniforms(Material &material, Transform transform)
 	material.Shader.Bind();
 	material.Texture.Bind();
 
-	glm::mat4 modelMatrix = Camera::getModel(transform.position, transform.rotation);
-	material.Shader.SetUniformMatrix4fv("uModel", glm::mat4(1.0f));
+	glm::mat4 modelMatrix = Camera::GetModel(transform.position, transform.rotation);
+
+	material.Shader.SetUniformMatrix4fv("uModel", modelMatrix);
 	material.Shader.SetUniformMatrix4fv("uView", camera->getView());
 	material.Shader.SetUniformMatrix4fv("uProjection", camera->getProjection());
 	material.Shader.SetUniformMatrix4fv("uTexture", material.Texture.GetId());
+
+	PointLight light = sceneLight.PointLights[0];
+	material.Shader.SetUniform3f("uLightColor", light.Color);
+	material.Shader.SetUniform3f("uLightPos", light.Position);
+	material.Shader.SetUniform1f("uLightIntensity", light.Intensity);
+
 }
+
+void Renderer::DrawScene(Scene &scene)
+{
+	for (entt::entity entity : scene.GetEntitiesWithComponent<Model>())
+	{
+		Model& model = scene.GetComponent<Model>(entity);
+		Transform& transform = scene.GetComponent<Transform>(entity);
+
+		DrawModel(model, transform);
+	}
+}
+
 
 void Renderer::BeginScene(std::shared_ptr<Camera> camera)
 {

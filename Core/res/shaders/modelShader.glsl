@@ -16,7 +16,7 @@ uniform mat4 uProjection; // Projection matrix
 void main() {
     gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
 
-    vFragPos = vec3(uModel * vec4(aPosition, 1.0));
+    vFragPos = vec3(uModel * vec4(aPosition, 1.0f));
 
     // Pass the transformed normal
     vNormal = mat3(transpose(inverse(uModel))) * aNormal;
@@ -39,8 +39,30 @@ out vec4 FragColor;    // Output color
 
 uniform sampler2D uTexture;    // Texture sampler
 
-void main() {
-    FragColor = texture2D(uTexture, vTexCoord);
+uniform int uNumLights;
+uniform vec3 uLightPos;
+uniform vec3 uLightColor;
+uniform float uLightIntensity;
+
+
+
+
+void main()
+{
+    // Calculate light direction (from light to fragment position)
+    vec3 lightDir = normalize(uLightPos - vFragPos);
+
+    // Calculate the diffuse strength (dot product between light direction and surface normal)
+    float diffuseStrength = max(0.0, dot(lightDir, vNormal));
+
+    // Compute the diffuse lighting contribution
+    vec3 diffuse = diffuseStrength * uLightColor * uLightIntensity;
+
+    // Sample the texture color
+    vec4 texColor = texture(uTexture, vTexCoord);
+
+    // Combine texture color with diffuse lighting
+    FragColor = texColor;
 }
 
 #endif

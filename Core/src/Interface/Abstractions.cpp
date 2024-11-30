@@ -204,6 +204,8 @@ Texture::Texture(std::string path)
 		std::cerr << "Failed to load texture" << std::endl;
 	}
 
+	stbi_image_free(data);
+
 }
 
 void Texture::Bind(unsigned int tex)
@@ -218,7 +220,3 @@ void Texture::Unbind()
 	glBindTexture(GL_TEXTURE_2D, id);
 }
 
-Texture::~Texture()
-{
-	stbi_image_free(data);
-}

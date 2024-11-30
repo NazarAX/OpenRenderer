@@ -83,23 +83,24 @@ void Camera::setPitch(float _pitch)
 	updateView();
 }
 
-glm::mat4 Camera::getModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
+glm::mat4 Camera::GetModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
 {
 	glm::mat4 model = glm::mat4(1.0f); // Identity matrix
 
-	// Scale the model
-	model = glm::scale(model, scale);
-
-	// Rotate the model
-	model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1)); // Rotate around Z
-	model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0, 1, 0)); // Rotate around Y
-	model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1, 0, 0)); // Rotate around X
-
-	// Translate the model
+	// Translate the model (last)
 	model = glm::translate(model, position);
+
+	// Rotate the model (second)
+	model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1, 0, 0)); // Rotate around X
+	model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0, 1, 0)); // Rotate around Y
+	model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1)); // Rotate around Z
+
+	// Scale the model (first)
+	model = glm::scale(model, scale);
 
 	return model;
 }
+
 
 void CameraController::UpdateInputs()
 {

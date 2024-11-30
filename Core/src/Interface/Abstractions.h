@@ -85,7 +85,7 @@ public:
 	Texture() = default;
 	Texture(std::string path);
 	Texture(unsigned char* data, int width, int height) {}
-	~Texture();
+	~Texture(){}
 
 public:
 	void Bind(unsigned int tex = 0);

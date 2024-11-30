@@ -1,12 +1,24 @@
 #pragma once
 #include "Interface/Abstractions.h"
 #include "Interface/Buffers.h"
+#include "Scene.h"
 #include "Camera.h"
 #include <memory>
 
 #include "Model.h"
 
 
+struct PointLight
+{
+	glm::vec3 Position;
+	glm::vec3 Color;
+	float Intensity;
+};
+
+struct SceneLightInfo
+{
+	std::vector<PointLight> PointLights;
+};
 
 
 class Renderer
@@ -19,9 +31,17 @@ public:
 
 	void BeginScene(std::shared_ptr<Camera> camera);
 	void DrawQuad(Shader& shader);
-	void DrawModel(const Model& model);
+	void DrawModel(const Model& model, const Transform& tranform);
+	void DrawScene(Scene& scene);
 	void EndScene();
+
+	void AddLight(PointLight light) {
+		sceneLight.PointLights.push_back(light);
+	}
+
 public:
+	SceneLightInfo sceneLight;//example
+
 	Material material;
 	VertexArray quadVA;
 	IndexBuffer quadIB;

@@ -47,7 +47,7 @@ public:
 
     glm::mat4 getView() const { return view; }
     glm::mat4 getProjection() const { return projection; }
-    static glm::mat4 getModel(glm::vec3 position, glm::vec3 rotation = glm::vec3(0), glm::vec3 scale = glm::vec3(1));
+    static glm::mat4 GetModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale=glm::vec3(1));
 };
 
 

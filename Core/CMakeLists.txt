@@ -28,11 +28,16 @@ add_dependencies(Core CopyRes)
 add_subdirectory("${LIB_DIR}/Glad")
 add_subdirectory("${LIB_DIR}/GLFW")
 add_subdirectory("${LIB_DIR}/Assimp")
+add_subdirectory("${LIB_DIR}/ImGui")
+add_subdirectory("${LIB_DIR}/yaml-cpp")
 
 
 target_include_directories(Core PRIVATE "${LIB_DIR}/Assimp/include")
 target_include_directories(Core PRIVATE "${LIB_DIR}/Glad/include")
 target_include_directories(Core PRIVATE "${LIB_DIR}/GLFW/include")
+target_include_directories(Core PRIVATE "${LIB_DIR}/ImGui")
+target_include_directories(Core PRIVATE "${LIB_DIR}/yaml-cpp/include")
+target_include_directories(Core PRIVATE "${LIB_DIR}/entt")
 target_include_directories(Core PRIVATE "${LIB_DIR}/GLM")
 target_include_directories(Core PRIVATE "${SRC_DIR}")
 
@@ -42,6 +47,8 @@ target_link_libraries(Core PRIVATE
         assimp
         glad   # GLEW static
         glfw     # GLFW
+        imgui
+        yaml-cpp
 )
 
 if (APPLE)
