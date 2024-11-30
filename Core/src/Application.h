@@ -7,11 +7,13 @@
 
 #include "System/Window.h"
 #include "System/Events/Event.h"
-#include "System/UI/UserInterface.h"
+#include "UI/UserInterface.h"
 #include "Rendering/Camera.h"
 #include "Rendering/Renderer.h"
 #include "Rendering/Scene.h"
 #include <memory>
+
+#include "Interface/FrameBuffer.h"
 
 
 class Application
@@ -25,7 +27,7 @@ private:
     std::shared_ptr<Renderer> renderer;
     std::shared_ptr<CameraController> cameraController;
     std::shared_ptr<Camera> camera;
-    entt::entity snail1;
+    std::shared_ptr<FrameBuffer> frameBuffer;
 
 private:
     Application();
@@ -33,7 +35,7 @@ private:
 public:
     ~Application();
 
-    void Update();
+    void Run();
     Scene* GetScene() { return &scene; }
 
     static void EventCallback(Events::Event& event);

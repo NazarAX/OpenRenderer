@@ -88,8 +88,8 @@ void Renderer::SetupShaderUniforms(Material &material, Transform transform)
 	glm::mat4 modelMatrix = Camera::GetModel(transform.position, transform.rotation);
 
 	material.Shader.SetUniformMatrix4fv("uModel", modelMatrix);
-	material.Shader.SetUniformMatrix4fv("uView", camera->getView());
-	material.Shader.SetUniformMatrix4fv("uProjection", camera->getProjection());
+	material.Shader.SetUniformMatrix4fv("uView", camera->GetView());
+	material.Shader.SetUniformMatrix4fv("uProjection", camera->GetProjection());
 	material.Shader.SetUniformMatrix4fv("uTexture", material.Texture.GetId());
 
 	PointLight light = sceneLight.PointLights[0];

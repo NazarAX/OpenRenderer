@@ -10,6 +10,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "System/Input.h"
+
 struct Transform
 {
     glm::vec3 position;
@@ -24,25 +26,6 @@ struct Name
 {
     std::string name;
 };
-
-
-// TODO: will be implemented later
-//class Entity
-//{
-//private:
-//    entt::entity handle;
-//    Entity* parent;
-//    std::vector<Entity*> children;
-//public:
-//    template<typename T> void AddComponent();
-//    template<typename T> void RemoveComponent();
-//    template<typename T> T& GetComponent();
-//
-//
-//
-//    entt::entity GetHandle() const { return handle; }
-//};
-
 
 class Scene
 {
@@ -74,10 +57,10 @@ public:
 
     entt::registry& GetRegistry() { return registry; }
 
-    template<typename T,
-    typename... Args> void AddComponent(entt::entity entity,Args&&... args)
+    template<typename T,typename... Args> T& AddComponent(entt::entity entity,Args&&... args)
     {
         registry.emplace<T>(entity, std::forward<Args>(args)...);
+        return registry.get<T>(entity);
     }
 
     template<typename T>
@@ -104,6 +87,11 @@ public:
             result.push_back(entity);
         return result;
     }
+
+    std::string GetName() { return name; }
+
+    static Scene* LoadScene(const std::string& filename);//NOTE: NOT IMPLEMENTED YET
+    static void SaveScene(const std::string& filename, Scene* scene);//NOTE: NOT IMPLEMENTED YET
 };
 
 

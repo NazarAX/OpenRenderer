@@ -29,10 +29,15 @@ Camera::Camera(float w, float h, float fov)
 		90
 	};
 
-	reset(w, h, fov=90);
+	float nearPlane = 0.1f; // Near clipping plane
+	float farPlane = 100.0f; // Far clipping plane
+
+	float aspectRatio = (float)w / (float)h;
+	this->projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+
 }
 
-void Camera::updateView()
+void Camera::UpdateView()
 {
 	transform.front.x = cos(glm::radians(transform.yaw)) * cos(glm::radians(transform.pitch));
 	transform.front.y = sin(glm::radians(transform.pitch));
@@ -44,43 +49,46 @@ void Camera::updateView()
 }
 
 
-void Camera::reset(float width, float height, float fov) {
+void Camera::Reset(float width, float height, float fov) {
 
 	float nearPlane = 0.1f; // Near clipping plane
 	float farPlane = 100.0f; // Far clipping plane
 
 	float aspectRatio = (float)width / (float)height;
 	this->projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+
+	if (frameBuffer != nullptr)
+		frameBuffer->Update(width, height);
 }
 
-void Camera::setPosition(glm::vec3 _pos)
+void Camera::SetPosition(glm::vec3 _pos)
 {
 	transform.pos = _pos;
-	updateView();
+	UpdateView();
 }
 
-void Camera::setZoom(float zoom)
+void Camera::SetZoom(float zoom)
 {
 	transform.zoom = zoom;
 }
 
-void Camera::setYaw(float _yaw)
+void Camera::SetYaw(float _yaw)
 {
 	transform.yaw = _yaw;
-	updateView();
+	UpdateView();
 }
 
-void Camera::turn(float delta_pitch, float delta_yaw)
+void Camera::Turn(float delta_pitch, float delta_yaw)
 {
 	transform.pitch += glm::radians(delta_yaw);
 	transform.yaw += glm::radians(delta_pitch);
-	updateView();
+	UpdateView();
 }
 
-void Camera::setPitch(float _pitch)
+void Camera::SetPitch(float _pitch)
 {
 	transform.pitch = _pitch;
-	updateView();
+	UpdateView();
 }
 
 glm::mat4 Camera::GetModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
@@ -105,20 +113,20 @@ glm::mat4 Camera::GetModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 sca
 void CameraController::UpdateInputs()
 {
 	// Handle input
-	if (Input::isKeyDown(KeyCode::W)) camera->move(camera->getFront() * 0.1f);
-	if (Input::isKeyDown(KeyCode::S)) camera->move(-camera->getFront() * 0.1f );
-	if (Input::isKeyDown(KeyCode::D)) camera->move(camera->getRight() * 0.1f);
-	if (Input::isKeyDown(KeyCode::A)) camera->move(-camera->getRight() * 0.1f);
+	if (Input::isKeyDown(Input::KeyCode::W)) camera->Move(camera->GetFront() * 0.1f);
+	if (Input::isKeyDown(Input::KeyCode::S)) camera->Move(-camera->GetFront() * 0.1f );
+	if (Input::isKeyDown(Input::KeyCode::D)) camera->Move(camera->GetRight() * 0.1f);
+	if (Input::isKeyDown(Input::KeyCode::A)) camera->Move(-camera->GetRight() * 0.1f);
 
 
-	if (Input::isMouseButtonPressed(MouseCode::Button1) )
+	if (Input::isMouseButtonPressed(Input::MouseCode::Button1) )
 	{
-		camera->turn(Input::getMouseDelta().x * 2, Input::getMouseDelta().y * 2);
+		camera->Turn(Input::getMouseDelta().x * 2, Input::getMouseDelta().y * 2);
 	}
 }
 
-void Camera::move(glm::vec3 _pos)
+void Camera::Move(glm::vec3 _pos)
 {
 	transform.pos += _pos;
-	updateView();
+	UpdateView();
 }

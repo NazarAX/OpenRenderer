@@ -8,6 +8,8 @@
 #include <memory>
 #include <glm/glm.hpp>
 
+#include "Interface/FrameBuffer.h"
+
 struct CameraTransform
 {
     glm::vec3 pos;
@@ -26,28 +28,31 @@ private:
     CameraTransform transform;
     glm::mat4 projection;
     glm::mat4 view;
+    FrameBuffer* frameBuffer;
 private:
-    void updateView();
+    void UpdateView();
 public:
     Camera() {}
     Camera(float w, float h, float fov);
 
-    void reset(float width, float height, float fov = 45.0f);
-    void move(glm::vec3 delta);
-    void setPosition(glm::vec3 _pos);
+    void Reset(float width, float height, float fov = 45.0f);
+    void Move(glm::vec3 delta);
+    void SetPosition(glm::vec3 _pos);
 
-    void setZoom(float zoom);
-    void setPitch(float pitch);
-    void setYaw(float yaw);
-    void turn(float delta_pitch, float delta_yaw);
+    void SetZoom(float zoom);
+    void SetPitch(float pitch);
+    void SetYaw(float yaw);
+    void Turn(float delta_pitch, float delta_yaw);
 
-    glm::vec3 getRight() const { return glm::cross(transform.front, transform.up); }
-    glm::vec3 getFront() const { return transform.front; }
-    glm::vec3 getPosition() const{ return transform.pos; }
+    glm::vec3 GetRight() const { return glm::cross(transform.front, transform.up); }
+    glm::vec3 GetFront() const { return transform.front; }
+    glm::vec3 GetPosition() const{ return transform.pos; }
 
-    glm::mat4 getView() const { return view; }
-    glm::mat4 getProjection() const { return projection; }
+    glm::mat4 GetView() const { return view; }
+    glm::mat4 GetProjection() const { return projection; }
     static glm::mat4 GetModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale=glm::vec3(1));
+
+    void SetFrameBuffer(FrameBuffer* _fb) { frameBuffer = _fb; }
 };
 
 

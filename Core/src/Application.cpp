@@ -8,6 +8,8 @@
 #include "System/Input.h"
 #include <iostream>
 
+#include "imgui.h"
+#include "../lib/Assimp/code/Common/Win32DebugLogStream.h"
 
 
 Application* Application::instance;
@@ -15,7 +17,7 @@ Application* Application::instance;
 Application::Application()
     :
     window({1920, 1080, "OpenRenderer"}),
-    ui(window),
+    ui(&window),
     scene("BaseScene")
 {
 
@@ -26,11 +28,22 @@ Application::Application()
 
     glEnable(GL_DEPTH_TEST);
 
+    frameBuffer = std::make_shared<FrameBuffer>(window.GetWidth(), window.GetHeight());
 
-    ui.AddPanel<HierarchyPanel>();
+
 
     camera = std::make_shared<Camera>(600, 600, 45);
-    camera->setPosition(glm::vec3(0.0f, 0.5f, -3.0f));
+    camera->SetPosition(glm::vec3(0.0f, 0.5f, -3.0f));
+
+
+    std::shared_ptr<HierarchyPanel> hierarchy_panel = std::make_shared<HierarchyPanel>();
+    std::shared_ptr<SceneViewPanel> scene_view_panel = std::make_shared<SceneViewPanel>();
+
+    scene_view_panel->SetFrameBuffer(frameBuffer.get());
+    scene_view_panel->SetViewCamera(camera.get());
+
+    ui.AddPanel(hierarchy_panel);
+    ui.AddPanel(scene_view_panel);
 
 
     cameraController = std::make_shared<CameraController>(camera);
@@ -39,7 +52,7 @@ Application::Application()
     renderer->AddLight(PointLight{glm::vec3(0), glm::vec3(1), 1});
 
 
-    snail1 = scene.CreateEntity("snail 1");
+    auto snail1 = scene.CreateEntity("snail 1");
     auto snail2 = scene.CreateEntity("snail 2");
 
     scene.AddComponent<Model>(snail1, "res/models/snail.obj");
@@ -63,19 +76,25 @@ Application::~Application()
 
 }
 
-void Application::Update()
+void Application::Run()
 {
-    Input::update(); // Update input system, including mouse positions
+    while (true)
+    {
+        frameBuffer->Bind();
+        renderer->BeginScene(camera);
+        renderer->DrawScene(scene);
+        frameBuffer->Unbind();
 
-    renderer->BeginScene(camera);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    renderer->DrawScene(scene);
+        ui.Draw(frameBuffer.get());
 
-    ui.Draw();
 
-    cameraController->UpdateInputs();
-    // Update window
-    window.Update();
+        Input::update();
+        cameraController->UpdateInputs();
+        // Update window
+        window.Update();
+    }
 }
 
 
@@ -121,7 +140,7 @@ void Application::EventCallback(Events::Event& e)
     if (e.GetType() == Events::Event::EventType::WindowResizeEvent)
     {
         Events::WindowResizeEvent& resizeEvent = (Events::WindowResizeEvent&)e;
-        GetInstance()->camera->reset(resizeEvent.GetWidth(), resizeEvent.GetHeight());
+        GetInstance()->camera->Reset(resizeEvent.GetWidth(), resizeEvent.GetHeight());
     }
 
     if (e.GetType() == Events::Event::EventType::WindowCloseEvent)

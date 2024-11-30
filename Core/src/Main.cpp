@@ -4,7 +4,5 @@
 int main()
 {
 	Application* app = Application::GetInstance();
-
-    while (true)
-	    app->Update();
+    app->Run();
 }
