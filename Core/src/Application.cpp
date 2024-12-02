@@ -17,7 +17,6 @@ Application* Application::instance;
 Application::Application()
     :
     window({1920, 1080, "OpenRenderer"}),
-    ui(&window),
     scene("BaseScene")
 {
 
@@ -30,30 +29,28 @@ Application::Application()
 
     frameBuffer = std::make_shared<FrameBuffer>(window.GetWidth(), window.GetHeight());
 
-
-
     camera = std::make_shared<Camera>(600, 600, 45);
     camera->SetPosition(glm::vec3(0.0f, 0.5f, -3.0f));
 
 
-    std::shared_ptr<HierarchyPanel> hierarchy_panel = std::make_shared<HierarchyPanel>();
-    std::shared_ptr<SceneViewPanel> scene_view_panel = std::make_shared<SceneViewPanel>();
-
-    scene_view_panel->SetFrameBuffer(frameBuffer.get());
-    scene_view_panel->SetViewCamera(camera.get());
-
-    ui.AddPanel(hierarchy_panel);
-    ui.AddPanel(scene_view_panel);
-
 
     cameraController = std::make_shared<CameraController>(camera);
 
-    renderer = std::make_shared<Renderer>();
+    renderer = std::make_unique<Renderer>();
     renderer->AddLight(PointLight{glm::vec3(0), glm::vec3(1), 1});
+
+
+    editorUI = std::make_unique<EditorUI>(EditorInfo{&window, &scene, camera.get(), frameBuffer.get()});
 
 
     auto snail1 = scene.CreateEntity("snail 1");
     auto snail2 = scene.CreateEntity("snail 2");
+    auto trophy = scene.CreateEntity("trophy");
+    scene.AddComponent<Model>(trophy, "res/models/scene.gltf");
+    scene.AddComponent<Transform>(trophy);
+
+    scene.GetComponent<Transform>(trophy).position = glm::vec3(10.0f, 20.0f, 3.0f);
+    scene.GetComponent<Transform>(trophy).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
 
     scene.AddComponent<Model>(snail1, "res/models/snail.obj");
     scene.AddComponent<Transform>(snail1);
@@ -87,7 +84,7 @@ void Application::Run()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ui.Draw(frameBuffer.get());
+        editorUI->Draw();
 
 
         Input::update();
@@ -140,7 +137,6 @@ void Application::EventCallback(Events::Event& e)
     if (e.GetType() == Events::Event::EventType::WindowResizeEvent)
     {
         Events::WindowResizeEvent& resizeEvent = (Events::WindowResizeEvent&)e;
-        GetInstance()->camera->Reset(resizeEvent.GetWidth(), resizeEvent.GetHeight());
     }
 
     if (e.GetType() == Events::Event::EventType::WindowCloseEvent)

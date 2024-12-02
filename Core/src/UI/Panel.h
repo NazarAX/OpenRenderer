@@ -13,7 +13,7 @@
 
 
 class Panel {
-    friend class UserInterface;
+    friend class EditorUI;
 private:
     ImVec2 panelSize;
     bool visible = true;

@@ -114,7 +114,7 @@ void Renderer::DrawScene(Scene &scene)
 void Renderer::BeginScene(std::shared_ptr<Camera> camera)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0);
+	glClearColor(0.2f, 0.0f, 0.2f, 1.0);
 
 	this->camera = camera;
 }

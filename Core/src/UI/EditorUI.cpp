@@ -2,7 +2,7 @@
 // Created by Nazarii on 11/25/2024.
 //
 
-#include "UserInterface.h"
+#include "EditorUI.h"
 
 #include <iostream>
 
@@ -15,7 +15,7 @@
 
 
 
-UserInterface::UserInterface(Window* window) : window(window)
+EditorUI::EditorUI(EditorInfo info) : editorInfo(info)
 {
     //ImGui initialization
     IMGUI_CHECKVERSION();
@@ -30,17 +30,28 @@ UserInterface::UserInterface(Window* window) : window(window)
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     ImGui_ImplOpenGL3_Init();
-    ImGui_ImplGlfw_InitForOpenGL(window->GetHandle(), true);
+    ImGui_ImplGlfw_InitForOpenGL(info.Window->GetHandle(), true);
+
+
+    std::shared_ptr<HierarchyPanel> hierarchy_panel = std::make_shared<HierarchyPanel>();
+    std::shared_ptr<SceneViewPanel> scene_view_panel = std::make_shared<SceneViewPanel>();
+
+    scene_view_panel->SetViewCamera(info.ViewCamera);
+    scene_view_panel->SetFrameBuffer(info.FrameBuffer);
+
+
+    AddPanel(hierarchy_panel);
+    AddPanel(scene_view_panel);
 }
 
-UserInterface::~UserInterface()
+EditorUI::~EditorUI()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 }
 
-void UserInterface::Draw(FrameBuffer* frame_buffer)
+void EditorUI::Draw()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -63,6 +74,6 @@ void UserInterface::Draw(FrameBuffer* frame_buffer)
         ImGui::RenderPlatformWindowsDefault();
 
         // Restore the OpenGL rendering context to the main window DC, since platform windows might have changed it.
-        glfwMakeContextCurrent(window->GetHandle());
+        glfwMakeContextCurrent(editorInfo.Window->GetHandle());
     }
 }

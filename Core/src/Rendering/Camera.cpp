@@ -57,8 +57,9 @@ void Camera::Reset(float width, float height, float fov) {
 	float aspectRatio = (float)width / (float)height;
 	this->projection = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 
-	if (frameBuffer != nullptr)
-		frameBuffer->Update(width, height);
+	//
+	// if (frameBuffer != nullptr)
+	// 	frameBuffer->Update(width, height);
 }
 
 void Camera::SetPosition(glm::vec3 _pos)

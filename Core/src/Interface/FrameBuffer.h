@@ -6,6 +6,7 @@ class FrameBuffer
 private:
 	unsigned int id;
 	unsigned int textureId;
+	unsigned int depthId;
 
 	int width, height;
 public:

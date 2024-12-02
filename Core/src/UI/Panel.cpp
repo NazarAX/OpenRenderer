@@ -81,7 +81,7 @@ void SceneViewPanel::Draw() {
 
 void SceneViewPanel::OnResize(float nX, float nY)
 {
+    viewCamera->Reset(nX, nY);
     frameBuffer->Update(nX, nY);
-
 }
 
