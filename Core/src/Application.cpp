@@ -27,6 +27,8 @@ Application::Application()
 
     glEnable(GL_DEPTH_TEST);
 
+    
+
     frameBuffer = std::make_shared<FrameBuffer>(window.GetWidth(), window.GetHeight());
 
     camera = std::make_shared<Camera>(600, 600, 45);

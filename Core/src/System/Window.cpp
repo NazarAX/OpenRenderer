@@ -26,10 +26,16 @@ Window::Window(WindowProps props)
 		s_GlfwInitialized = status;
 	}
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 	m_Handle = glfwCreateWindow(m_Data.Width, m_Data.Height, m_Data.Title.c_str(), NULL, NULL);
 	glfwShowWindow(m_Handle);
 	glfwMakeContextCurrent(m_Handle);
 	glfwSetWindowUserPointer(m_Handle, &m_Data);
+
+	
 
 	glfwSetWindowSizeCallback(m_Handle, [](GLFWwindow* window, int width, int height)
 		{

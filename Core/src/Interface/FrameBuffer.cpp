@@ -1,10 +1,11 @@
 #include "FrameBuffer.h"
 #include <glad/glad.h>
 #include <iostream>
+#include "Exception.h"
 
 FrameBuffer::FrameBuffer(int width, int height) : width(width), height(height)
 {
-	glGenFramebuffers(1, &id);
+	GL(glGenFramebuffers(1, &id));
 	glBindFramebuffer(GL_FRAMEBUFFER, id);
 
 	glGenTextures(1, &textureId);

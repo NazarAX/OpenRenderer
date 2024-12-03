@@ -31,8 +31,8 @@ private:
 
 private:
     Application();
-    void SetupGL();
 public:
+    static void SetupGL();
     ~Application();
 
     void Run();

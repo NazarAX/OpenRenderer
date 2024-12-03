@@ -23,13 +23,14 @@ add_custom_target(CopyRes
         COMMENT "Copying resource files to ${CMAKE_BINARY_DIR}/Core/res/"
 )
 
+
 add_dependencies(Core CopyRes)
 
 add_subdirectory("${LIB_DIR}/Glad")
 add_subdirectory("${LIB_DIR}/GLFW")
 add_subdirectory("${LIB_DIR}/Assimp")
 add_subdirectory("${LIB_DIR}/ImGui")
-add_subdirectory("${LIB_DIR}/yaml-cpp")
+#add_subdirectory("${LIB_DIR}/yaml-cpp")
 
 
 target_include_directories(Core PRIVATE "${LIB_DIR}/Assimp/include")
@@ -48,7 +49,7 @@ target_link_libraries(Core PRIVATE
         glad   # GLEW static
         glfw     # GLFW
         imgui
-        yaml-cpp
+        #yaml-cpp
 )
 
 if (APPLE)

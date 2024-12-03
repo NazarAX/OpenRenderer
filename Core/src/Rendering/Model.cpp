@@ -8,7 +8,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 #define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices | aiProcess_FixInfacingNormals)
 
