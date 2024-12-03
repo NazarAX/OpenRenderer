@@ -25,7 +25,6 @@ class EditorUI
 {
 private:
     std::vector<std::shared_ptr<Panel>> panels;
-    ImGuiIO* io;
     EditorInfo* editorInfo;
     static EditorUI* instance;
 public:
@@ -44,6 +43,8 @@ private:
 public:
     ~EditorUI();
 
+
+    void SetDarkTheme();
 
     static EditorUI* GetInstance() {
         if (instance == nullptr) {

@@ -21,5 +21,12 @@ target_include_directories(Editor PRIVATE "../lib/entt")
 
 
 target_link_libraries(Editor PRIVATE Core imgui)
-#file(COPY ${CMAKE_SOURCE_DIR}/Core/res DESTINATION  ${CMAKE_BINARY_DIR}/Core)
-#
+
+add_custom_target(CopyRes
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/Editor/res/
+        ${CMAKE_BINARY_DIR}/Editor/res
+        COMMENT "Copying resource files to ${CMAKE_BINARY_DIR}/Core/res/"
+)
+
+add_dependencies(Editor CopyRes)

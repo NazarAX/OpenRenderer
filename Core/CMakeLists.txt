@@ -17,15 +17,6 @@ add_library(Core STATIC ${SOURCES} ${HEADERS})
 #file(COPY ${CMAKE_SOURCE_DIR}/Core/res DESTINATION  ${CMAKE_BINARY_DIR}/Core)
 #
 
-add_custom_target(CopyRes
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/Core/res
-        ${CMAKE_BINARY_DIR}/Core/res
-        COMMENT "Copying resource files to ${CMAKE_BINARY_DIR}/Core/res/"
-)
-
-
-add_dependencies(Core CopyRes)
 
 add_subdirectory("${LIB_DIR}/Glad")
 add_subdirectory("${LIB_DIR}/Assimp")

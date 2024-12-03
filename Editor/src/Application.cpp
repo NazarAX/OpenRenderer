@@ -59,13 +59,14 @@ Application::Application()
     auto snail1 = scene.CreateEntity("snail 1");
     auto snail2 = scene.CreateEntity("snail 2");
     auto trophy = scene.CreateEntity("trophy");
+
     scene.AddComponent<Model>(trophy, "res/models/scene.gltf");
     scene.AddComponent<Transform>(trophy);
 
     scene.GetComponent<Transform>(trophy).position = glm::vec3(10.0f, 20.0f, 3.0f);
     scene.GetComponent<Transform>(trophy).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
 
-    scene.AddComponent<Model>(snail1,  "res/models/scene.gltf");
+    scene.AddComponent<Model>(snail1,  "res/models/snail.obj");
     scene.AddComponent<Transform>(snail1);
 
     scene.GetComponent<Transform>(snail1).position = glm::vec3(10.0f, 0.0f, 3.0f);

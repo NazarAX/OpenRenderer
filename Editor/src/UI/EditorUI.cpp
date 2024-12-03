@@ -22,14 +22,19 @@ EditorUI::EditorUI()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    io = &ImGui::GetIO();
-    io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    float fontSize = 22.0f;
+    io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Bold.ttf", fontSize);
+    io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Regular.ttf", fontSize);
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
+    SetDarkTheme();
     ImGui_ImplOpenGL3_Init();
     ImGui_ImplGlfw_InitForOpenGL(Window::currentWindow->GetHandle(), true);
 }
@@ -41,6 +46,17 @@ EditorUI::~EditorUI()
     ImGui::DestroyContext();
 }
 
+void EditorUI::SetDarkTheme()
+{
+    ImVec4* colors = ImGui::GetStyle().Colors;
+    colors[ImGuiCol_FrameBg]                = ImVec4(0.27f, 0.27f, 0.28f, 0.54f);
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.11f, 0.11f, 0.11f, 0.84f);
+
+    colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+}
+
 void EditorUI::Draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -49,6 +65,7 @@ void EditorUI::Draw()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGui::DockSpaceOverViewport();
+
 
     for (const auto& panel : panels)
     {
@@ -60,7 +77,9 @@ void EditorUI::Draw()
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    ImGuiIO& io = ImGui::GetIO();
+
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();

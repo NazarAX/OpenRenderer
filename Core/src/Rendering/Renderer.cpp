@@ -49,7 +49,7 @@ Renderer::Renderer()
 
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(1.0f, 1.0f); // Adjust the values as needed
-
+	glEnable(GL_DEPTH_TEST);
 }
 
 
@@ -120,7 +120,7 @@ void Renderer::DrawScene(Scene &scene)
 void Renderer::BeginScene(std::shared_ptr<Camera> camera)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.2f, 0.0f, 0.2f, 1.0);
+	glClearColor(0.529f,0.808f,0.922f, 1.0);
 
 	this->camera = camera;
 }
