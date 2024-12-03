@@ -6,9 +6,11 @@
 
 #include "Application.h"
 #include "imgui.h"
+#include "Rendering/Scene.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <iostream>
+#include <sstream>
 
 
 
@@ -54,8 +56,28 @@ void HierarchyPanel::Draw()
 
 void PropertiesPanel::Draw()
 {
-    ImGui::Begin(GetName().c_str());
+    Scene* scene = Application::GetInstance()->GetScene();
+    entt::entity selected = EditorUI::GetInstance()->GetPanel<HierarchyPanel>()->GetSelectedEntity();
+    Transform& transform = scene->GetComponent<Transform>(selected);
 
+    ImGui::Begin(GetName().c_str());
+    ImGui::Text(scene->GetComponent<Name>(selected).name.c_str());
+
+    ImGui::Text("Transform Component");
+
+    // Position
+    ImGui::Text("Position");
+    ImGui::DragFloat3("##Position", &transform.position.x, 0.1f);
+
+    // Rotation
+    ImGui::Text("Rotation");
+    ImGui::DragFloat3("##Rotation", &transform.rotation.x, 1.0f);
+
+    // Scale
+    ImGui::Text("Scale");
+    ImGui::DragFloat3("##Scale", &transform.scale.x, 0.1f);
+
+    ImGui::End();
 }
 
 
@@ -85,3 +107,12 @@ void SceneViewPanel::OnResize(float nX, float nY)
     frameBuffer->Update(nX, nY);
 }
 
+void RenderStatsPanel::Draw() {
+    ImGui::Begin(GetName().c_str());
+
+    ImGui::Text(std::string("Delta Time : " + std::to_string(frameStats->DeltaTime)).c_str());
+
+    ImGui::Text(std::string("FPS : " + std::to_string(1/frameStats->DeltaTime)).c_str());
+
+    ImGui::End();
+}

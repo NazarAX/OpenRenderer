@@ -14,8 +14,9 @@
 
 
 
+EditorUI* EditorUI::instance;
 
-EditorUI::EditorUI(EditorInfo info) : editorInfo(info)
+EditorUI::EditorUI()
 {
     //ImGui initialization
     IMGUI_CHECKVERSION();
@@ -30,18 +31,7 @@ EditorUI::EditorUI(EditorInfo info) : editorInfo(info)
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     ImGui_ImplOpenGL3_Init();
-    ImGui_ImplGlfw_InitForOpenGL(info.Window->GetHandle(), true);
-
-
-    std::shared_ptr<HierarchyPanel> hierarchy_panel = std::make_shared<HierarchyPanel>();
-    std::shared_ptr<SceneViewPanel> scene_view_panel = std::make_shared<SceneViewPanel>();
-
-    scene_view_panel->SetViewCamera(info.ViewCamera);
-    scene_view_panel->SetFrameBuffer(info.FrameBuffer);
-
-
-    AddPanel(hierarchy_panel);
-    AddPanel(scene_view_panel);
+    ImGui_ImplGlfw_InitForOpenGL(Window::currentWindow->GetHandle(), true);
 }
 
 EditorUI::~EditorUI()
@@ -53,6 +43,8 @@ EditorUI::~EditorUI()
 
 void EditorUI::Draw()
 {
+    glClear(GL_COLOR_BUFFER_BIT);
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -74,6 +66,6 @@ void EditorUI::Draw()
         ImGui::RenderPlatformWindowsDefault();
 
         // Restore the OpenGL rendering context to the main window DC, since platform windows might have changed it.
-        glfwMakeContextCurrent(editorInfo.Window->GetHandle());
+        glfwMakeContextCurrent(Window::currentWindow->GetHandle());
     }
 }

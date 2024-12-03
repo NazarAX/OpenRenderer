@@ -21,7 +21,8 @@ public:
     enum class PanelType {
         Hierarchy,
         Properties,
-        SceneView
+        SceneView,
+        RenderStats
     };
 public:
     virtual ~Panel() = default;
@@ -30,6 +31,7 @@ public:
     void Update();
     virtual std::string GetName() const = 0;
     virtual PanelType GetType() const = 0;
+
     virtual void OnResize(float nX, float nY) {}
 
     void SetVisible(bool visible) { this->visible = visible; }
@@ -54,8 +56,11 @@ public:
 };
 
 class PropertiesPanel : public Panel {
+private:
+    entt::entity selectedEntity;
 public:
     void Draw() override;
+
 
 
     PANEL_CLASS_TYPE(Properties)
@@ -79,4 +84,20 @@ public:
     void OnResize(float nX, float nY) override;
 
     PANEL_CLASS_TYPE(SceneView)
+};
+
+struct FrameStats;
+
+class RenderStatsPanel : public Panel {
+private:
+    FrameStats* frameStats;
+public:
+    RenderStatsPanel() {}
+    RenderStatsPanel(FrameStats* frameStats) : frameStats(frameStats) {}
+
+    void SetFrameStats(FrameStats* frameStats) { this->frameStats = frameStats; }
+
+    void Draw() override;
+
+    PANEL_CLASS_TYPE(RenderStats)
 };

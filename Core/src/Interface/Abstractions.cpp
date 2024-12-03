@@ -27,7 +27,6 @@ Shader::Shader(const std::string& filename)
 	unsigned int fragmentShader = CompileShader(fragment, name, ShaderType::Fragment);
 
 	this->id = LinkShaders(vertexShader, fragmentShader);
-    
 }
 
 

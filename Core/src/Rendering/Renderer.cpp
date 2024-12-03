@@ -82,6 +82,10 @@ void Renderer::DrawModel(const Model& model, const Transform& transform)
 
 void Renderer::SetupShaderUniforms(Material &material, Transform transform)
 {
+
+	static glm::vec3 lightDisplacement = glm::vec3(0.0f, 0.0f, 0.0f);
+	
+
 	material.Shader.Bind();
 	material.Texture.Bind();
 
@@ -94,8 +98,10 @@ void Renderer::SetupShaderUniforms(Material &material, Transform transform)
 
 	PointLight light = sceneLight.PointLights[0];
 	material.Shader.SetUniform3f("uLightColor", light.Color);
-	material.Shader.SetUniform3f("uLightPos", light.Position);
+	material.Shader.SetUniform3f("uLightPos", light.Position + lightDisplacement);
 	material.Shader.SetUniform1f("uLightIntensity", light.Intensity);
+	material.Shader.SetUniform3f("uAmbientLight", glm::vec3(0.5f, 0.5f, 0.5f));
+
 
 }
 

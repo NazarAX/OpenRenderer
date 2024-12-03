@@ -16,14 +16,21 @@
 #include "Interface/FrameBuffer.h"
 
 
-class Application
-{
+
+struct FrameStats {
+    float DeltaTime;
+    float Timer;
+};
+
+class Application {
 private:
     static Application* instance;
     Window window;
     Model model; // sample model
     Scene scene;
-    std::unique_ptr<EditorUI> editorUI;
+    FrameStats frameStats;
+    EditorInfo* editorInfo;
+    EditorUI* editorUI;
     std::unique_ptr<Renderer> renderer;
     std::shared_ptr<CameraController> cameraController;
     std::shared_ptr<Camera> camera;
@@ -36,6 +43,7 @@ public:
     ~Application();
 
     void Run();
+
     Scene* GetScene() { return &scene; }
 
     static void EventCallback(Events::Event& event);

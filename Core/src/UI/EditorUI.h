@@ -4,6 +4,8 @@
 
 #ifndef USERINTERFACE_H
 #define USERINTERFACE_H
+#include <iostream>
+
 #include "imgui.h"
 #include "System/Window.h"
 #include "Rendering/Scene.h"
@@ -13,10 +15,9 @@
 
 struct EditorInfo
 {
-    Window* Window;
-    Scene* Scene;
     Camera* ViewCamera;
     FrameBuffer* FrameBuffer;
+    entt::entity SelectedEntity;
 };
 
 
@@ -25,18 +26,34 @@ class EditorUI
 private:
     std::vector<std::shared_ptr<Panel>> panels;
     ImGuiIO* io;
-    EditorInfo editorInfo;
-private:
-    void AddPanel(std::shared_ptr<Panel> panel)
-    {
-        panels.push_back(panel);
-    }
+    EditorInfo* editorInfo;
+    static EditorUI* instance;
 public:
-    EditorUI(EditorInfo info);
+    void AddPanel(std::shared_ptr<Panel> _panel)
+    {
+        for (auto panel : panels) {
+            if (panel->GetType() == _panel->GetType()) {
+                std::cerr << "Panel " << _panel->GetName() << " already added" << std::endl;
+                return;
+            }
+        }
+        panels.push_back(_panel);
+    }
+private:
+    EditorUI();
+public:
     ~EditorUI();
 
 
+    static EditorUI* GetInstance() {
+        if (instance == nullptr) {
+            instance = new EditorUI();
+        }
+        return instance;
+    }
 
+    void SetEditorInfo(EditorInfo* _editorInfo);
+    EditorInfo* GetEditorInfo() { return editorInfo; }
 
     template<class T>
     void SetPanelVisible(bool status) {
@@ -50,15 +67,17 @@ public:
     }
 
     template<class T>
-    std::shared_ptr<T> GetPanel()
+T* GetPanel()
     {
         static_assert(std::is_base_of<Panel, T>::value, "T must derive from Panel");
 
-        for (auto panel : panels) {
+        for (const auto& panel : panels) {  // Use `const auto&` for safety with unique_ptr
             if (panel->GetType() == T::GetStaticType()) {
-                return panel.get();
+                return static_cast<T*>(panel.get());  // Cast to the derived type
             }
         }
+
+        return nullptr;  // Explicitly return nullptr if not found
     }
 
 

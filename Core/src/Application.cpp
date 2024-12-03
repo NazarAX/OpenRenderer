@@ -17,7 +17,7 @@ Application* Application::instance;
 Application::Application()
     :
     window({1920, 1080, "OpenRenderer"}),
-    scene("BaseScene")
+    scene("BaseScene"), frameStats({0, 0})
 {
 
     window.SetEventCallback(Application::EventCallback);
@@ -41,8 +41,28 @@ Application::Application()
     renderer = std::make_unique<Renderer>();
     renderer->AddLight(PointLight{glm::vec3(0), glm::vec3(1), 1});
 
+    editorInfo = new EditorInfo();
 
-    editorUI = std::make_unique<EditorUI>(EditorInfo{&window, &scene, camera.get(), frameBuffer.get()});
+    editorUI = EditorUI::GetInstance();
+
+    //Configuring editorUI
+    {
+        std::shared_ptr<HierarchyPanel> hierarchy_panel = std::make_shared<HierarchyPanel>();
+        std::shared_ptr<SceneViewPanel> scene_view_panel = std::make_shared<SceneViewPanel>();
+        std::shared_ptr<RenderStatsPanel> render_stats_panel = std::make_shared<RenderStatsPanel>();
+        std::shared_ptr<PropertiesPanel> properties_panel = std::make_shared<PropertiesPanel>();
+
+        scene_view_panel->SetViewCamera(this->camera.get());
+        scene_view_panel->SetFrameBuffer(this->frameBuffer.get());
+        render_stats_panel->SetFrameStats(&frameStats);
+
+
+        editorUI->AddPanel(hierarchy_panel);
+        editorUI->AddPanel(scene_view_panel);
+        editorUI->AddPanel(render_stats_panel);
+        editorUI->AddPanel(properties_panel);
+    }
+
 
 
     auto snail1 = scene.CreateEntity("snail 1");
@@ -77,22 +97,25 @@ Application::~Application()
 
 void Application::Run()
 {
+
     while (true)
     {
+
+        frameStats.Timer = glfwGetTime();
+
         frameBuffer->Bind();
         renderer->BeginScene(camera);
         renderer->DrawScene(scene);
         frameBuffer->Unbind();
 
-        glClear(GL_COLOR_BUFFER_BIT);
-
         editorUI->Draw();
-
 
         Input::update();
         cameraController->UpdateInputs();
         // Update window
         window.Update();
+
+        frameStats.DeltaTime = glfwGetTime() - frameStats.Timer;
     }
 }
 

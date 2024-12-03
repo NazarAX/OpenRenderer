@@ -43,8 +43,7 @@ uniform int uNumLights;
 uniform vec3 uLightPos;
 uniform vec3 uLightColor;
 uniform float uLightIntensity;
-
-
+uniform vec3 uAmbientLight;
 
 
 void main()
@@ -61,8 +60,10 @@ void main()
     // Sample the texture color
     vec4 texColor = texture(uTexture, vTexCoord);
 
+
+
     // Combine texture color with diffuse lighting
-    FragColor = texColor;
+    FragColor = texColor * ( vec4(diffuse, 1) + vec4(uAmbientLight, 1));
 }
 
 #endif
