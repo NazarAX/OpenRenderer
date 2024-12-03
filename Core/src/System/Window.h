@@ -3,6 +3,16 @@
 #include "Events/Events.h"
 #include <functional>
 
+
+
+struct FrameStats {
+    float DeltaTime;
+    float Timer;
+
+	void Begin();
+	void End();
+};
+
 typedef struct GLFWwindow;
 
 struct WindowProps
@@ -47,6 +57,9 @@ private:
 		EventCallbackFn EventCallback;
 		Window* WindowPtr;
 	};
+
+	static void SetupGL();
+
 	static bool s_GlfwInitialized;
 	WindowData m_Data;
 	GLFWwindow* m_Handle;

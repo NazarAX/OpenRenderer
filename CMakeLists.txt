@@ -6,4 +6,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(OpenRenderer)
 
-add_subdirectory(Core)
+add_subdirectory("Core")
+add_subdirectory("Editor")
+add_subdirectory("lib/GLFW")
+add_subdirectory("lib/ImGui")

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include "Input.h"
 
@@ -9,6 +10,17 @@ using namespace Events;
 
 bool Window::s_GlfwInitialized;
 Window* Window::currentWindow;
+
+
+void FrameStats::Begin()
+{
+	Timer = glfwGetTime();
+}
+
+void FrameStats::End()
+{
+	DeltaTime = glfwGetTime() - Timer;
+}
 
 Window::Window(WindowProps props) 
 	: Active(true)
@@ -34,6 +46,8 @@ Window::Window(WindowProps props)
 	glfwShowWindow(m_Handle);
 	glfwMakeContextCurrent(m_Handle);
 	glfwSetWindowUserPointer(m_Handle, &m_Data);
+
+	SetupGL();
 
 	
 
@@ -114,4 +128,38 @@ void Window::Update()
 {
 	glfwPollEvents();
 	glfwSwapBuffers(m_Handle);
+}
+
+
+
+void Window::SetupGL()
+{
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    const GLubyte* renderer = glGetString(GL_RENDERER);
+    const GLubyte* version = glGetString(GL_VERSION);
+
+    std::cout << "Renderer: " << renderer << std::endl;
+    std::cout << "OpenGL version supported: " << version << std::endl;
+
+
+#ifdef DEBUG_GL
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); // Optional: ensures messages are processed immediately
+    glDebugMessageCallback(
+        [](GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+            std::cerr << "OpenGL Debug Message: " << message << "\n"
+                    << "Source: " << source << ", Type: " << type
+                    << ", ID: " << id << ", Severity: " << severity << std::endl;
+
+            if (severity == GL_DEBUG_SEVERITY_HIGH) {
+                std::cerr << "Critical OpenGL Error!" << std::endl;
+            }
+        },
+        nullptr);
+#endif
 }
