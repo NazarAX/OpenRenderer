@@ -39,14 +39,6 @@ Renderer::Renderer()
 
 	quadVA.AddBuffer(vertBuffer, Coordinates, 2);
 	quadVA.AddBuffer(uvBuffer, TexCoords, 2);
-
-	material.Shader = Shader("res/shaders/modelShader.glsl");
-	material.Texture = Texture("res/textures/snail_color.png");
-
-	// light.Color = glm::vec3(1.0f);
-	// light.Position = glm::vec3(1.0f, 1.0f, 1.0f);
-	// light.Intensity = 1;
-
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(1.0f, 1.0f); // Adjust the values as needed
 	glEnable(GL_DEPTH_TEST);
@@ -65,7 +57,7 @@ void Renderer::DrawQuad(Shader& shader)
 }
 
 
-void Renderer::DrawModel(const Model& model, const Transform& transform)
+void Renderer::DrawModel(const Model& model, Material& material, const Transform& transform)
 {
 	std::vector<Mesh> meshes = model.GetMeshes();
 
@@ -87,14 +79,14 @@ void Renderer::SetupShaderUniforms(Material &material, Transform transform)
 	
 
 	material.Shader.Bind();
-	material.Texture.Bind();
+	material.Albedo.Bind();
 
 	glm::mat4 modelMatrix = Camera::GetModel(transform.position, transform.rotation);
 
 	material.Shader.SetUniformMatrix4fv("uModel", modelMatrix);
 	material.Shader.SetUniformMatrix4fv("uView", camera->GetView());
 	material.Shader.SetUniformMatrix4fv("uProjection", camera->GetProjection());
-	material.Shader.SetUniformMatrix4fv("uTexture", material.Texture.GetId());
+	material.Shader.SetUniformMatrix4fv("uTexture", material.Albedo.GetId());
 
 	PointLight light = sceneLight.PointLights[0];
 	material.Shader.SetUniform3f("uLightColor", light.Color);
@@ -111,8 +103,9 @@ void Renderer::DrawScene(Scene &scene)
 	{
 		Model& model = scene.GetComponent<Model>(entity);
 		Transform& transform = scene.GetComponent<Transform>(entity);
+		Material& material = scene.GetComponent<Material>(entity);
 
-		DrawModel(model, transform);
+		DrawModel(model, material, transform);
 	}
 }
 

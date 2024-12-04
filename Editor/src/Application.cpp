@@ -5,7 +5,7 @@
 #include "Application.h"
 #include "System/Input.h"
 #include <iostream>
-
+#include <Rendering/Serializer.h>
 
 Application* Application::instance;
 
@@ -32,35 +32,24 @@ Application::Application()
     renderer = std::make_unique<Renderer>();
     renderer->AddLight(PointLight{glm::vec3(0), glm::vec3(1), 1});
 
-    editorInfo = new EditorInfo();
-
-    editorUI = EditorUI::GetInstance();
+    EditorUI::Init();
 
     //Configuring editorUI
-    {
-        std::shared_ptr<HierarchyPanel> hierarchy_panel = std::make_shared<HierarchyPanel>();
-        std::shared_ptr<SceneViewPanel> scene_view_panel = std::make_shared<SceneViewPanel>();
-        std::shared_ptr<RenderStatsPanel> render_stats_panel = std::make_shared<RenderStatsPanel>();
-        std::shared_ptr<PropertiesPanel> properties_panel = std::make_shared<PropertiesPanel>();
 
-        scene_view_panel->SetViewCamera(this->camera.get());
-        scene_view_panel->SetFrameBuffer(this->frameBuffer.get());
-        render_stats_panel->SetFrameStats(&frameStats);
+    hierarchyPanel = std::make_shared<HierarchyPanel>();
+    sceneViewPanel = std::make_shared<SceneViewPanel>();
+    settingsPanel = std::make_shared<SettingsPanel>();
 
 
-        editorUI->AddPanel(hierarchy_panel);
-        editorUI->AddPanel(scene_view_panel);
-        editorUI->AddPanel(render_stats_panel);
-        editorUI->AddPanel(properties_panel);
-    }
 
 
+    Material snailMat = Material{Texture("res/textures/snail_color.png"), Shader("res/shaders/modelShader.glsl"), "snailMaterial"};
+    Material trophyMat = Material{Texture("res/textures/DefaultMaterial_baseColor.jpeg"), Shader("res/shaders/modelShader.glsl"), "trophyMaterial"};
 
     auto snail1 = scene.CreateEntity("snail 1");
     auto snail2 = scene.CreateEntity("snail 2");
     auto trophy = scene.CreateEntity("trophy");
 
-    scene.AddComponent<Model>(trophy, "res/models/scene.gltf");
     scene.AddComponent<Transform>(trophy);
 
     scene.GetComponent<Transform>(trophy).position = glm::vec3(10.0f, 20.0f, 3.0f);
@@ -68,6 +57,7 @@ Application::Application()
 
     scene.AddComponent<Model>(snail1,  "res/models/snail.obj");
     scene.AddComponent<Transform>(snail1);
+    scene.AddComponent<Material>(snail1, snailMat);
 
     scene.GetComponent<Transform>(snail1).position = glm::vec3(10.0f, 0.0f, 3.0f);
     scene.GetComponent<Transform>(snail1).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
@@ -75,10 +65,14 @@ Application::Application()
 
     scene.AddComponent<Model>(snail2,  "res/models/scene.gltf");
     scene.AddComponent<Transform>(snail2);
+    scene.AddComponent<Material>(snail2, trophyMat);
+
 
 
     scene.GetComponent<Transform>(snail1).position = glm::vec3(0.0f, 0.0f, 3.0f);
     scene.GetComponent<Transform>(snail1).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
+
+    Serializer::Serialize(&scene, "scene.yaml");
 }
 
 
@@ -100,7 +94,13 @@ void Application::Run()
         renderer->DrawScene(scene);
         frameBuffer->Unbind();
 
-        editorUI->Draw();
+        EditorUI::Begin();
+
+        hierarchyPanel->Draw();
+        settingsPanel->Draw(frameStats);
+        sceneViewPanel->Draw(frameBuffer.get(), camera.get());
+
+        EditorUI::End();
 
         Input::update();
         cameraController->UpdateInputs();

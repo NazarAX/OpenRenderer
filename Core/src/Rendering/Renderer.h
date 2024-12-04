@@ -31,7 +31,7 @@ public:
 
 	void BeginScene(std::shared_ptr<Camera> camera);
 	void DrawQuad(Shader& shader);
-	void DrawModel(const Model& model, const Transform& tranform);
+	void DrawModel(const Model& model, Material& material, const Transform& tranform);
 	void DrawScene(Scene& scene);
 	void EndScene();
 
@@ -42,7 +42,6 @@ public:
 public:
 	SceneLightInfo sceneLight;//example
 
-	Material material;
 	VertexArray quadVA;
 	IndexBuffer quadIB;
 	std::shared_ptr<Camera> camera;

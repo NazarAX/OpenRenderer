@@ -8,6 +8,7 @@
 #include "System/Window.h"
 #include "System/Events/Event.h"
 #include "UI/EditorUI.h"
+#include "UI/Panel.h"
 #include "Rendering/Camera.h"
 #include "Rendering/Renderer.h"
 #include "Rendering/Scene.h"
@@ -21,15 +22,15 @@ class Application {
 private:
     static Application* instance;
     Window window;
-    Model model; // sample model
     Scene scene;
     FrameStats frameStats;
-    EditorInfo* editorInfo;
-    EditorUI* editorUI;
     std::unique_ptr<Renderer> renderer;
     std::shared_ptr<CameraController> cameraController;
     std::shared_ptr<Camera> camera;
     std::shared_ptr<FrameBuffer> frameBuffer;
+    std::shared_ptr<HierarchyPanel> hierarchyPanel;
+    std::shared_ptr<SceneViewPanel> sceneViewPanel;
+    std::shared_ptr<SettingsPanel> settingsPanel;
 
 private:
     Application();

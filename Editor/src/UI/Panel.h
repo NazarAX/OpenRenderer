@@ -10,94 +10,69 @@
 
 
 
-
-
-class Panel {
-    friend class EditorUI;
-private:
-    ImVec2 panelSize;
-    bool visible = true;
-public:
-    enum class PanelType {
-        Hierarchy,
-        Properties,
-        SceneView,
-        RenderStats
-    };
-public:
-    virtual ~Panel() = default;
-    virtual void Draw() = 0;
-
-    void Update();
-    virtual std::string GetName() const = 0;
-    virtual PanelType GetType() const = 0;
-
-    virtual void OnResize(float nX, float nY) {}
-
-    void SetVisible(bool visible) { this->visible = visible; }
-};
-
-#define PANEL_CLASS_TYPE(type)	static PanelType GetStaticType() { return PanelType::type; }\
-                                virtual PanelType GetType() const override { return GetStaticType(); }\
-                                virtual std::string GetName() const override { return #type; }
+//
+//
+// class Panel {
+//     friend class EditorUI;
+// private:
+//     ImVec2 panelSize;
+//     bool visible = true;
+// public:
+//     enum class PanelType {
+//         Hierarchy,
+//         Properties,
+//         SceneView,
+//         RenderStats
+//     };
+// public:
+//     virtual ~Panel() = default;
+//     virtual void Draw() = 0;
+//
+//     void Update();
+//     virtual std::string GetName() const = 0;
+//     virtual PanelType GetType() const = 0;
+//
+//     virtual void OnResize(float nX, float nY) {}
+//
+//     void SetVisible(bool visible) { this->visible = visible; }
+// };
+//
+// #define PANEL_CLASS_TYPE(type)	static PanelType GetStaticType() { return PanelType::type; }\
+//                                 virtual PanelType GetType() const override { return GetStaticType(); }\
+//                                 virtual std::string GetName() const override { return #type; }
 
 
 // Example panel classes
-class HierarchyPanel : public Panel {
+
+
+struct FrameStats;
+
+
+class HierarchyPanel
+{
 private:
     entt::entity selectedEntity;
 public:
-    void Draw() override;
+    void Draw();
 
     void SetSelectedEntity(entt::entity entity) { selectedEntity = entity;}
     entt::entity GetSelectedEntity() { return selectedEntity; }
 
-    PANEL_CLASS_TYPE(Hierarchy)
-};
-
-class PropertiesPanel : public Panel {
-private:
-    entt::entity selectedEntity;
-public:
-    void Draw() override;
-
-
-
-    PANEL_CLASS_TYPE(Properties)
 };
 
 
-class SceneViewPanel : public Panel
+class SceneViewPanel
 {
 private:
-    FrameBuffer* frameBuffer;
-    Camera* viewCamera;
+    ImVec2 prevSize;
 public:
-    SceneViewPanel() {};
-    SceneViewPanel(Camera* viewCamera, FrameBuffer* frameBuffer) : viewCamera(viewCamera) {}
-
-    void SetViewCamera(Camera* viewCamera) { this->viewCamera = viewCamera; }
-    void SetFrameBuffer(FrameBuffer* frameBuffer) { this->frameBuffer = frameBuffer; }
-
-    void Draw() override;
-
-    void OnResize(float nX, float nY) override;
-
-    PANEL_CLASS_TYPE(SceneView)
+    void Draw(FrameBuffer* frameBuffer, Camera* camera);
 };
 
-struct FrameStats;
-
-class RenderStatsPanel : public Panel {
-private:
-    FrameStats* frameStats;
+class SettingsPanel
+{
 public:
-    RenderStatsPanel() {}
-    RenderStatsPanel(FrameStats* frameStats) : frameStats(frameStats) {}
-
-    void SetFrameStats(FrameStats* frameStats) { this->frameStats = frameStats; }
-
-    void Draw() override;
-
-    PANEL_CLASS_TYPE(RenderStats)
+    void Draw(FrameStats frameStats);
 };
+
+

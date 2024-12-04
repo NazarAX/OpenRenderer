@@ -20,7 +20,7 @@ add_library(Core STATIC ${SOURCES} ${HEADERS})
 
 add_subdirectory("${LIB_DIR}/Glad")
 add_subdirectory("${LIB_DIR}/Assimp")
-#add_subdirectory("${LIB_DIR}/yaml-cpp")
+add_subdirectory("${LIB_DIR}/yaml-cpp")
 
 #including subdirectory library dependepcies
 target_include_directories(Core PRIVATE "${LIB_DIR}/Assimp/include")
@@ -41,7 +41,7 @@ target_link_libraries(Core PRIVATE
         glad   # GLEW static
         glfw     # GLFW
         imgui
-        #yaml-cpp
+        yaml-cpp
 )
 
 if (APPLE)

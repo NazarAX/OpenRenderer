@@ -176,7 +176,7 @@ void Shader::SetUniform3fv(const std::string& name, int count, const glm::vec3* 
 
 
 
-Texture::Texture(std::string path)
+Texture::Texture(std::string path) : filePath(path)
 {
 	glGenTextures(1, &id);
 	glActiveTexture(GL_TEXTURE0);
@@ -209,7 +209,7 @@ Texture::Texture(std::string path)
 
 void Texture::Bind(unsigned int tex)
 {
-	textureId = tex;
+	textureIndex = tex;
 	glActiveTexture(GL_TEXTURE0 + tex);
 	glBindTexture(GL_TEXTURE_2D, id);
 }

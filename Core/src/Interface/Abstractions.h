@@ -79,7 +79,8 @@ private:
 	int width;
 	int height;
 	int nChannels;
-	unsigned int textureId;
+	unsigned int textureIndex;
+	std::string filePath;
 
 public:
 	Texture() = default;
@@ -92,6 +93,7 @@ public:
 	void Unbind();
 
 	inline unsigned int GetId() { return id; }
-	inline unsigned int GetTextureId() { return textureId; }
+	inline unsigned int GetIndex() { return textureIndex; }
+	inline std::string GetFilePath() { return this->filePath; }
 };
 

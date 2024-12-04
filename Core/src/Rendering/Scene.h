@@ -74,8 +74,14 @@ public:
     {
         if (registry.all_of<T>(entity))
             return registry.get<T>(entity);
-        else
-            throw std::runtime_error("Entity does not have the requested component.");
+        throw std::runtime_error("Entity does not have the requested component.");
+    }
+
+    template<typename T>
+    bool HasComponent(entt::entity entity) {
+        if (registry.all_of<T>(entity))
+            return true;
+        return false;
     }
 
     template<typename T>
@@ -89,9 +95,6 @@ public:
     }
 
     std::string GetName() { return name; }
-
-    static Scene* LoadScene(const std::string& filename);//NOTE: NOT IMPLEMENTED YET
-    static void SaveScene(const std::string& filename, Scene* scene);//NOTE: NOT IMPLEMENTED YET
 };
 
 

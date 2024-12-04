@@ -12,8 +12,9 @@
 
 struct Material
 {
-    Texture Texture;
+    Texture Albedo;
     Shader Shader;
+    std::string Name;
 };
 
 #endif //MATERIAL_H

@@ -14,28 +14,14 @@
 
 
 
-void Panel::Update()
-{
-    ImVec2 currentWindowSize = ImGui::GetContentRegionAvail();
-
-    // Check if the size has changed
-    if (currentWindowSize.x != panelSize.x || currentWindowSize.y != panelSize.y)
-    {
-        panelSize = currentWindowSize;
-
-        OnResize(panelSize.x, panelSize.y);
-    }
-}
-
 
 void HierarchyPanel::Draw()
 {
 
-    ImGui::Begin(GetName().c_str());
+    ImGui::Begin("Hierarchy");
+    Scene* scene = Application::GetInstance()->GetScene();
 
-    Update();
-
-    std::vector<entt::entity> entities = Application::GetInstance()->GetScene()->GetEntitiesWithComponent<Name>();
+    std::vector<entt::entity> entities = scene->GetEntitiesWithComponent<Name>();
 
     for (auto entity : entities)
     {
@@ -50,43 +36,92 @@ void HierarchyPanel::Draw()
         }
     }
 
+    if (selectedEntity != entt::null) {
+        ImGui::Begin("Properties");
+
+        if (scene->HasComponent<Name>(selectedEntity))
+        {
+            auto& name = scene->GetComponent<Name>(selectedEntity).name;
+
+            static char buffer[256];
+            memset(buffer, 0, 256);
+            strcpy(buffer, name.c_str());
+
+            if (ImGui::InputText("Name", buffer, 256)) {
+                name = buffer;
+            }
+        }
+
+        if (scene->HasComponent<Transform>(selectedEntity))
+        {
+            Transform& transform = scene->GetComponent<Transform>(selectedEntity);
+
+            if (ImGui::TreeNodeEx("Transform"))
+            {
+                // Position
+                ImGui::DragFloat3("Position", &transform.position.x, 0.1f);
+
+                // Rotation
+                ImGui::DragFloat3("Rotation", &transform.rotation.x, 1.0f);
+
+                // Scale
+                ImGui::DragFloat3("Scale", &transform.scale.x, 0.1f);
+
+                ImGui::TreePop();
+            }
+        }
+
+        if (scene->HasComponent<Model>(selectedEntity))
+        {
+            if (ImGui::TreeNodeEx("Mesh"))
+            {
+                ImGui::Text("Mesh");
+
+                ImGui::TreePop();
+            }
+        }
+
+        if (scene->HasComponent<Material>(selectedEntity))
+        {
+            Material& material = scene->GetComponent<Material>(selectedEntity);
+
+            if (ImGui::TreeNodeEx("Material"))
+            {
+                ImGui::Text(material.Name.c_str());
+
+                ImGui::Text("Albedo");
+                ImGui::Image(material.Albedo.GetId(), ImVec2(100, 100));
+
+
+                ImGui::TreePop();
+            }
+        }
+
+        ImGui::End();
+    }
+
     ImGui::End();
 }
 
 
-void PropertiesPanel::Draw()
+
+void SceneViewPanel::Draw(FrameBuffer* frameBuffer, Camera* viewCamera)
 {
-    Scene* scene = Application::GetInstance()->GetScene();
-    entt::entity selected = EditorUI::GetInstance()->GetPanel<HierarchyPanel>()->GetSelectedEntity();
-    Transform& transform = scene->GetComponent<Transform>(selected);
 
-    ImGui::Begin(GetName().c_str());
-    ImGui::Text(scene->GetComponent<Name>(selected).name.c_str());
+    ImGui::Begin("Scene View");
 
-    ImGui::Text("Transform Component");
+    // Check if the size has changed
 
-    // Position
-    ImGui::Text("Position");
-    ImGui::DragFloat3("##Position", &transform.position.x, 0.1f);
+    ImVec2 currentPanelSize = ImGui::GetContentRegionAvail();
 
-    // Rotation
-    ImGui::Text("Rotation");
-    ImGui::DragFloat3("##Rotation", &transform.rotation.x, 1.0f);
+    if (currentPanelSize.x != prevSize.x || currentPanelSize.y !=  prevSize.y)
+    {
+         prevSize = currentPanelSize;
 
-    // Scale
-    ImGui::Text("Scale");
-    ImGui::DragFloat3("##Scale", &transform.scale.x, 0.1f);
+        viewCamera->Reset(currentPanelSize.x, currentPanelSize.y);
+        frameBuffer->Update(currentPanelSize.x, currentPanelSize.y);
+    }
 
-    ImGui::End();
-}
-
-
-
-void SceneViewPanel::Draw() {
-
-    ImGui::Begin(GetName().c_str());
-
-    Update();
     // Check if the texture ID is valid
     if (frameBuffer && frameBuffer->GetTextureId() != 0) {
         // Render the framebuffer texture
@@ -97,22 +132,20 @@ void SceneViewPanel::Draw() {
         ImGui::Text("Invalid framebuffer texture");
     }
 
+
+
     // End the ImGui window
     ImGui::End();
 }
 
-void SceneViewPanel::OnResize(float nX, float nY)
-{
-    viewCamera->Reset(nX, nY);
-    frameBuffer->Update(nX, nY);
-}
 
-void RenderStatsPanel::Draw() {
-    ImGui::Begin(GetName().c_str());
 
-    ImGui::Text(std::string("Delta Time : " + std::to_string(frameStats->DeltaTime)).c_str());
+void SettingsPanel::Draw(FrameStats frameStats) {
+    ImGui::Begin("Render Stats");
 
-    ImGui::Text(std::string("FPS : " + std::to_string(1/frameStats->DeltaTime)).c_str());
+    ImGui::Text(std::string("Delta Time : " + std::to_string(frameStats.DeltaTime)).c_str());
+
+    ImGui::Text(std::string("FPS : " + std::to_string(1/frameStats.DeltaTime)).c_str());
 
     ImGui::End();
 }

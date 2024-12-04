@@ -35,7 +35,7 @@ public:
     Camera() {}
     Camera(float w, float h, float fov);
 
-    void Reset(float width, float height, float fov = 45.0f);
+    void Reset(float width, float height, float fov = 90.0f);
     void Move(glm::vec3 delta);
     void SetPosition(glm::vec3 _pos);
 
