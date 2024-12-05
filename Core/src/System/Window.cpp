@@ -42,6 +42,10 @@ Window::Window(WindowProps props)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	#ifdef __APPLE__
+	glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_TRUE);
+	#endif
+
 	m_Handle = glfwCreateWindow(m_Data.Width, m_Data.Height, m_Data.Title.c_str(), NULL, NULL);
 	glfwShowWindow(m_Handle);
 	glfwMakeContextCurrent(m_Handle);

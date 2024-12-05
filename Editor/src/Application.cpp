@@ -26,7 +26,6 @@ Application::Application()
     camera->SetPosition(glm::vec3(0.0f, 0.5f, -3.0f));
 
 
-
     cameraController = std::make_shared<CameraController>(camera);
 
     renderer = std::make_unique<Renderer>();
@@ -55,7 +54,7 @@ Application::Application()
     scene.GetComponent<Transform>(trophy).position = glm::vec3(10.0f, 20.0f, 3.0f);
     scene.GetComponent<Transform>(trophy).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
 
-    scene.AddComponent<Model>(snail1,  "res/models/snail.obj");
+    scene.AddComponent<Model>(snail1,  "res/models/Snail.obj");
     scene.AddComponent<Transform>(snail1);
     scene.AddComponent<Material>(snail1, snailMat);
 

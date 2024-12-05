@@ -466,11 +466,31 @@ void ImGui_ImplGlfw_WindowFocusCallback(GLFWwindow* window, int focused)
     io.AddFocusEvent(focused != 0);
 }
 
+#include <iostream>
+
+static void ImGui_ImplGlfw_ScaleMousePos(GLFWwindow* window, double &x, double &y) {
+    // Get Window Size
+    int window_width, window_height;
+    glfwGetWindowSize(window, &window_width, &window_height);
+    if (window_width <= 0 || window_height <= 0) {
+        return;
+    }
+    // Get Framebuffer Size
+    int framebuffer_width, framebuffer_height;
+    glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
+    // Multiply
+    x *= double(framebuffer_width) / double(window_width);
+    y *= double(framebuffer_height) / double(window_height);
+}
+
+
 void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double x, double y)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
     if (bd->PrevUserCallbackCursorPos != nullptr && ImGui_ImplGlfw_ShouldChainCallback(window))
         bd->PrevUserCallbackCursorPos(window, x, y);
+
+    
 
     ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -480,10 +500,14 @@ void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double x, double y)
         x += window_x;
         y += window_y;
     }
+
+    ImGui_ImplGlfw_ScaleMousePos(window, x, y);
+
+
+    // Add the cursor event to ImGui
     io.AddMousePosEvent((float)x, (float)y);
     bd->LastValidMousePos = ImVec2((float)x, (float)y);
 }
-
 // Workaround: X11 seems to send spurious Leave/Enter events which would make us lose our position,
 // so we back it up and restore on Leave/Enter (see https://github.com/ocornut/imgui/issues/4984)
 void ImGui_ImplGlfw_CursorEnterCallback(GLFWwindow* window, int entered)
@@ -795,6 +819,7 @@ static void ImGui_ImplGlfw_UpdateMouseData()
                     mouse_x += window_x;
                     mouse_y += window_y;
                 }
+                 ImGui_ImplGlfw_ScaleMousePos(window, mouse_x, mouse_y);
                 bd->LastValidMousePos = ImVec2((float)mouse_x, (float)mouse_y);
                 io.AddMousePosEvent((float)mouse_x, (float)mouse_y);
             }
@@ -967,6 +992,18 @@ void ImGui_ImplGlfw_NewFrame()
         io.DisplayFramebufferScale = ImVec2((float)display_w / (float)w, (float)display_h / (float)h);
     if (bd->WantUpdateMonitors)
         ImGui_ImplGlfw_UpdateMonitors();
+
+    #if defined(__APPLE__)
+    // On Apple, The window size is reported in Low DPI, even when running in high DPI mode
+    ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+    if (!platform_io.Monitors.empty() && platform_io.Monitors[0].DpiScale > 1.0f && display_h != h)
+    {
+        io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+        io.DisplaySize = ImVec2((float)display_w, (float)display_h);
+
+    }
+
+    #endif
 
     // Setup time step
     // (Accept glfwGetTime() not returning a monotonically increasing value. Seems to happens on disconnecting peripherals and probably on VMs and Emscripten, see #6491, #6189, #6114, #3644)

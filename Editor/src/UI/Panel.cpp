@@ -73,9 +73,11 @@ void HierarchyPanel::Draw()
 
         if (scene->HasComponent<Model>(selectedEntity))
         {
+            Model& model = scene->GetComponent<Model>(selectedEntity);
+
             if (ImGui::TreeNodeEx("Mesh"))
             {
-                ImGui::Text("Mesh");
+                ImGui::Text(std::string("Mesh "  + model.GetName()).c_str());
 
                 ImGui::TreePop();
             }
@@ -95,6 +97,26 @@ void HierarchyPanel::Draw()
 
                 ImGui::TreePop();
             }
+        }
+
+
+
+        
+
+
+
+        if (ImGui::BeginPopupContextItem("Components"))
+        {
+            if (ImGui::MenuItem("Option 1")) { /* Handle Option 1 */ }
+            if (ImGui::MenuItem("Option 2")) { /* Handle Option 2 */ }
+            if (ImGui::MenuItem("Option 3")) { /* Handle Option 3 */ }
+            ImGui::EndPopup();
+        }
+
+        // Right-click detection to open the popup
+        if (ImGui::Button("Add Component"))
+        {
+            ImGui::OpenPopup("Components");
         }
 
         ImGui::End();

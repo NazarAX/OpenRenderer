@@ -34,7 +34,6 @@ CMakeOutput.log
 # Ignore library and executable files generated during the build
 *.exe
 *.dylib
-*.obj
 *.o
 *.lo
 

@@ -101,12 +101,26 @@ namespace EditorUI {
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+        //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
+        
         float fontSize = 22.0f;
-        io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Bold.ttf", fontSize);
-        io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Regular.ttf", fontSize);
+
+        float xscale, yscale;
+        glfwGetWindowContentScale(Window::currentWindow->GetHandle(), &xscale, &yscale);
+
+        io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Bold.ttf", fontSize * xscale);
+        io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/TitilliumWeb-Regular.ttf", fontSize * xscale);
+ 
+
+
+
+        int fbWidth, fbHeight;
+        int winWidth, winHeight;
+        glfwGetFramebufferSize(Window::currentWindow->GetHandle(), &fbWidth, &fbHeight);
+        glfwGetWindowSize(Window::currentWindow->GetHandle(), &winWidth, &winHeight);
+        io.DisplayFramebufferScale = ImVec2((float)fbWidth / winWidth, (float)fbHeight / winHeight);
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
@@ -136,6 +150,7 @@ namespace EditorUI {
         {
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
+            
 
             // Restore the OpenGL rendering context to the main window DC, since platform windows might have changed it.
             glfwMakeContextCurrent(Window::currentWindow->GetHandle());
