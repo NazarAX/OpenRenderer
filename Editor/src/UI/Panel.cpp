@@ -9,39 +9,113 @@
 #include "Rendering/Scene.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include <entt/entt.hpp>
 #include <iostream>
 #include <sstream>
+#include <typeindex>
+#include <type_traits>
 
 
 
 
-void HierarchyPanel::Draw()
+
+
+
+namespace EditorUI
 {
 
-    ImGui::Begin("Hierarchy");
-    Scene* scene = Application::GetInstance()->GetScene();
-
-    std::vector<entt::entity> entities = scene->GetEntitiesWithComponent<Name>();
-
-    for (auto entity : entities)
+    void DrawSceneViewPanel(FrameBuffer* frameBuffer, Camera* viewCamera)
     {
-        // Fetch the name component
-        auto& nameComponent = Application::GetInstance()->GetScene()->GetComponent<Name>(entity);
 
-        // Create a selectable item for the entity
-        if (ImGui::Selectable(nameComponent.name.c_str(), selectedEntity == entity))
+        ImGui::Begin("Scene View");
+        static ImVec2 prevSize(0,0);
+
+        // Check if the size has changed
+
+        ImVec2 currentPanelSize = ImGui::GetContentRegionAvail();
+
+        if (currentPanelSize.x != prevSize.x || currentPanelSize.y !=  prevSize.y)
         {
-            // Handle selection logic
-            selectedEntity = entity; // Update the selected entity
+            prevSize = currentPanelSize;
+
+            viewCamera->Reset(currentPanelSize.x, currentPanelSize.y);
+            frameBuffer->Update(currentPanelSize.x, currentPanelSize.y);
+        }
+
+        // Check if the texture ID is valid
+        if (frameBuffer && frameBuffer->GetTextureId() != 0) {
+            // Render the framebuffer texture
+            ImGui::Image(frameBuffer->GetTextureId(),
+                        ImVec2(frameBuffer->GetWidth(), frameBuffer->GetHeight()),
+                        ImVec2(0, 1), ImVec2(1, 0)); // Flip texture coordinates (bottom-left to top-left)
+        } else {
+            ImGui::Text("Invalid framebuffer texture");
+        }
+
+        ImGui::End();
+    }
+
+
+    void DrawSettingsPanel(FrameStats frameStats) 
+    {
+        ImGui::Begin("Render Stats");
+
+        ImGui::Text(std::string("Delta Time : " + std::to_string(frameStats.DeltaTime)).c_str());
+
+        ImGui::Text(std::string("FPS : " + std::to_string(1/frameStats.DeltaTime)).c_str());
+
+        ImGui::End();
+    }
+
+    void DrawMainMenuBar()
+    {
+        if (ImGui::BeginMainMenuBar())
+        {
+            // File menu
+            if (ImGui::BeginMenu("File"))
+            {
+                if (ImGui::MenuItem("New", "Ctrl+N")) { /* Handle New */ }
+                if (ImGui::MenuItem("Open", "Ctrl+O")) { /* Handle Open */ }
+                if (ImGui::MenuItem("Save", "Ctrl+S")) { /* Handle Save */ }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Exit", "Alt+F4")) { /* Handle Exit */ }
+                ImGui::EndMenu();
+            }
+
+            // Edit menu
+            if (ImGui::BeginMenu("Edit"))
+            {
+                if (ImGui::MenuItem("Undo", "Ctrl+Z")) { /* Handle Undo */ }
+                if (ImGui::MenuItem("Redo", "Ctrl+Y")) { /* Handle Redo */ }
+                ImGui::Separator();
+                if (ImGui::MenuItem("Cut", "Ctrl+X")) { /* Handle Cut */ }
+                if (ImGui::MenuItem("Copy", "Ctrl+C")) { /* Handle Copy */ }
+                if (ImGui::MenuItem("Paste", "Ctrl+V")) { /* Handle Paste */ }
+                ImGui::EndMenu();
+            }
+
+            // View menu
+            if (ImGui::BeginMenu("View"))
+            {
+                if (ImGui::MenuItem("Show Toolbar", NULL, true)) { /* Handle Toolbar Toggle */ }
+                if (ImGui::MenuItem("Show Sidebar", NULL, true)) { /* Handle Sidebar Toggle */ }
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMainMenuBar();
         }
     }
 
-    if (selectedEntity != entt::null) {
+
+
+    void DrawPropertiesPanel(Scene* scene, entt::entity& selected)
+    {
         ImGui::Begin("Properties");
 
-        if (scene->HasComponent<Name>(selectedEntity))
+        std::vector<std::type_index> missingComponents;
+        if (scene->HasComponent<Name>(selected))
         {
-            auto& name = scene->GetComponent<Name>(selectedEntity).name;
+            auto& name = scene->GetComponent<Name>(selected).name;
 
             static char buffer[256];
             memset(buffer, 0, 256);
@@ -52,9 +126,9 @@ void HierarchyPanel::Draw()
             }
         }
 
-        if (scene->HasComponent<Transform>(selectedEntity))
+        if (scene->HasComponent<Transform>(selected))
         {
-            Transform& transform = scene->GetComponent<Transform>(selectedEntity);
+            Transform& transform = scene->GetComponent<Transform>(selected);
 
             if (ImGui::TreeNodeEx("Transform"))
             {
@@ -70,10 +144,14 @@ void HierarchyPanel::Draw()
                 ImGui::TreePop();
             }
         }
-
-        if (scene->HasComponent<Model>(selectedEntity))
+        else
         {
-            Model& model = scene->GetComponent<Model>(selectedEntity);
+            missingComponents.push_back(typeid(Transform));
+        }
+
+        if (scene->HasComponent<Model>(selected))
+        {
+            Model& model = scene->GetComponent<Model>(selected);
 
             if (ImGui::TreeNodeEx("Mesh"))
             {
@@ -82,10 +160,14 @@ void HierarchyPanel::Draw()
                 ImGui::TreePop();
             }
         }
-
-        if (scene->HasComponent<Material>(selectedEntity))
+        else
         {
-            Material& material = scene->GetComponent<Material>(selectedEntity);
+            missingComponents.push_back(typeid(Model));
+        }
+
+        if (scene->HasComponent<Material>(selected))
+        {
+            Material& material = scene->GetComponent<Material>(selected);
 
             if (ImGui::TreeNodeEx("Material"))
             {
@@ -98,22 +180,18 @@ void HierarchyPanel::Draw()
                 ImGui::TreePop();
             }
         }
-
-
-
-        
-
-
-
-        if (ImGui::BeginPopupContextItem("Components"))
+        else
         {
-            if (ImGui::MenuItem("Option 1")) { /* Handle Option 1 */ }
-            if (ImGui::MenuItem("Option 2")) { /* Handle Option 2 */ }
-            if (ImGui::MenuItem("Option 3")) { /* Handle Option 3 */ }
+            missingComponents.push_back(typeid(Material));
+        }
+        
+        if (ImGui::BeginPopup("Components"))
+        {
+
+            
             ImGui::EndPopup();
         }
 
-        // Right-click detection to open the popup
         if (ImGui::Button("Add Component"))
         {
             ImGui::OpenPopup("Components");
@@ -122,52 +200,72 @@ void HierarchyPanel::Draw()
         ImGui::End();
     }
 
-    ImGui::End();
-}
 
 
 
-void SceneViewPanel::Draw(FrameBuffer* frameBuffer, Camera* viewCamera)
-{
 
-    ImGui::Begin("Scene View");
-
-    // Check if the size has changed
-
-    ImVec2 currentPanelSize = ImGui::GetContentRegionAvail();
-
-    if (currentPanelSize.x != prevSize.x || currentPanelSize.y !=  prevSize.y)
+    void DrawHierarchyPanel(Scene* scene, entt::entity& selected)
     {
-         prevSize = currentPanelSize;
 
-        viewCamera->Reset(currentPanelSize.x, currentPanelSize.y);
-        frameBuffer->Update(currentPanelSize.x, currentPanelSize.y);
+        ImGui::Begin("Hierarchy");
+
+        entt::entity hovered;
+
+        std::cout << "nameComponent.name";
+        scene->GetRegistry().each([scene, &selected, &hovered](auto entity)
+        {
+            auto& nameComponent = scene->GetComponent<Name>(entity);
+
+            // Create a selectable item for the entity
+            if (ImGui::Selectable(nameComponent.name.c_str(), selected == entity))
+            {
+                // Handle selection logic
+                selected = entity; // Update the selected entity
+            }
+
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1))
+            {
+                hovered = entity;
+            }
+        });
+
+
+        if (ImGui::BeginPopup("RightClickPopup")) // Check if the popup is open
+        {
+            if (ImGui::MenuItem("Delete")) // Add a "Delete" menu item
+            {
+                if (hovered != entt::null)
+                {
+                    // Handle deletion of the hovered entity
+                    scene->DeleteEntity(hovered);  // Delete the entity from the registry
+                    hovered = entt::null;  // Reset hovered entity after deletion
+                }
+            }
+
+            if (ImGui::MenuItem("Deactivate")) // Add a "Deactivate" menu item
+            {
+                if (hovered != entt::null)
+                {
+                    // Handle deactivation of the hovered entity (you can add your deactivation logic here)
+                    // Example: scene->DeactivateEntity(hovered);
+                    hovered = entt::null;  // Reset hovered entity after deactivation
+                }
+            }
+
+            ImGui::EndPopup(); // End the popup
+        }
+
+        if (ImGui::Button("Create Empty Entity"))
+        {
+            scene->CreateEntity("Empty");
+        }
+
+
+        ImGui::End();
+
+        if (selected != entt::null) 
+        {
+            DrawPropertiesPanel(scene, selected);
+        }
     }
-
-    // Check if the texture ID is valid
-    if (frameBuffer && frameBuffer->GetTextureId() != 0) {
-        // Render the framebuffer texture
-        ImGui::Image(frameBuffer->GetTextureId(),
-                     ImVec2(frameBuffer->GetWidth(), frameBuffer->GetHeight()),
-                     ImVec2(0, 1), ImVec2(1, 0)); // Flip texture coordinates (bottom-left to top-left)
-    } else {
-        ImGui::Text("Invalid framebuffer texture");
-    }
-
-
-
-    // End the ImGui window
-    ImGui::End();
-}
-
-
-
-void SettingsPanel::Draw(FrameStats frameStats) {
-    ImGui::Begin("Render Stats");
-
-    ImGui::Text(std::string("Delta Time : " + std::to_string(frameStats.DeltaTime)).c_str());
-
-    ImGui::Text(std::string("FPS : " + std::to_string(1/frameStats.DeltaTime)).c_str());
-
-    ImGui::End();
 }

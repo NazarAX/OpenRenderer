@@ -48,31 +48,10 @@
 struct FrameStats;
 
 
-class HierarchyPanel
+namespace EditorUI
 {
-private:
-    entt::entity selectedEntity;
-public:
-    void Draw();
-
-    void SetSelectedEntity(entt::entity entity) { selectedEntity = entity;}
-    entt::entity GetSelectedEntity() { return selectedEntity; }
-
-};
-
-
-class SceneViewPanel
-{
-private:
-    ImVec2 prevSize;
-public:
-    void Draw(FrameBuffer* frameBuffer, Camera* camera);
-};
-
-class SettingsPanel
-{
-public:
-    void Draw(FrameStats frameStats);
-};
-
-
+    void DrawMainMenuBar();
+    void DrawSettingsPanel(FrameStats frameStats);
+    void DrawHierarchyPanel(Scene* scene, entt::entity& selected);
+    void DrawSceneViewPanel(FrameBuffer* frameBuffer, Camera* viewCamera);
+}  

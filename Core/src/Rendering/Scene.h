@@ -9,8 +9,8 @@
 #include <entt/entt.hpp>
 #include <stdexcept>
 #include <string>
-
 #include "System/Input.h"
+
 
 struct Transform
 {
@@ -18,14 +18,14 @@ struct Transform
     glm::vec3 rotation;
     glm::vec3 scale;
 
-
-    //static glm::mat4 GetModelMatrix(Transform&, std::shared_ptr<Camera>);
 };
 
 struct Name
 {
     std::string name;
+
 };
+
 
 class Scene
 {
@@ -67,6 +67,11 @@ public:
     void RemoveComponent(entt::entity entity)
     {
         registry.remove<T>(entity);
+    }
+
+    void DeleteEntity(entt::entity entity)
+    {
+        registry.destroy(entity);
     }
 
     template<typename T>

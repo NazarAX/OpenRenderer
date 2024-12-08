@@ -35,10 +35,6 @@ Application::Application()
 
     //Configuring editorUI
 
-    hierarchyPanel = std::make_shared<HierarchyPanel>();
-    sceneViewPanel = std::make_shared<SceneViewPanel>();
-    settingsPanel = std::make_shared<SettingsPanel>();
-
 
 
 
@@ -85,7 +81,7 @@ void Application::Run()
 
     while (true)
     {
-
+        entt::entity ent;
         frameStats.Begin();
 
         frameBuffer->Bind();
@@ -95,9 +91,11 @@ void Application::Run()
 
         EditorUI::Begin();
 
-        hierarchyPanel->Draw();
-        settingsPanel->Draw(frameStats);
-        sceneViewPanel->Draw(frameBuffer.get(), camera.get());
+        EditorUI::DrawMainMenuBar();
+
+        EditorUI::DrawHierarchyPanel(&scene, ent);
+        EditorUI::DrawSceneViewPanel(frameBuffer.get(), camera.get());
+        EditorUI::DrawSettingsPanel(frameStats);
 
         EditorUI::End();
 

@@ -28,9 +28,6 @@ private:
     std::shared_ptr<CameraController> cameraController;
     std::shared_ptr<Camera> camera;
     std::shared_ptr<FrameBuffer> frameBuffer;
-    std::shared_ptr<HierarchyPanel> hierarchyPanel;
-    std::shared_ptr<SceneViewPanel> sceneViewPanel;
-    std::shared_ptr<SettingsPanel> settingsPanel;
 
 private:
     Application();
