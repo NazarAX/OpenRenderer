@@ -78,5 +78,6 @@ void Serializer::Serialize(Scene* scene, const std::string& filename)
 
 Scene* Serializer::Deserialize(const std::string& filename)
 {
-    return nullptr;
+
+    YAML::Node root = YAML::LoadFile(filename);
 }
