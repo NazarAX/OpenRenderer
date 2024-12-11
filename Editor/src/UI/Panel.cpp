@@ -3,6 +3,7 @@
 //
 
 #include "Panel.h"
+#include "UI.h"
 
 #include "../Application.h"
 #include "imgui.h"
@@ -12,6 +13,7 @@
 #include <entt/entt.hpp>
 #include <iostream>
 #include <sstream>
+#include <tinyfiledialogs.h>
 #include <typeindex>
 #include <type_traits>
 
@@ -21,7 +23,7 @@
 
 
 
-namespace EditorUI
+namespace UI
 {
 
     void DrawSceneViewPanel(FrameBuffer* frameBuffer, Camera* viewCamera)
@@ -135,6 +137,11 @@ namespace EditorUI
                 ImGui::DragFloat3("Rotation", &transform.rotation.x, 1.0f);
                 ImGui::DragFloat3("Scale", &transform.scale.x, 0.1f);
 
+                if (ImGui::Button("Remove"))
+                {
+                    scene->RemoveComponent<Transform>(selected);
+                }
+
                 ImGui::TreePop();
             }
         }
@@ -147,6 +154,11 @@ namespace EditorUI
             if (ImGui::TreeNodeEx("Mesh"))
             {
                 ImGui::Text(std::string("Mesh "  + model.GetName()).c_str());
+
+                if (ImGui::Button("Remove"))
+                {
+                    scene->RemoveComponent<Model>(selected);
+                }
 
                 ImGui::TreePop();
             }
@@ -164,6 +176,19 @@ namespace EditorUI
                 ImGui::Text("Albedo");
                 ImGui::Image(material.Albedo.GetId(), ImVec2(100, 100));
 
+                const char* filters[] = {".png", ".jpg", ".jpeg"};
+
+                FileReplaceableItem(filters, [&material](std::string name)
+                {
+                    material.Albedo = Texture(name);
+                });
+
+
+
+                if (ImGui::Button("Remove"))
+                {
+                    scene->RemoveComponent<Material>(selected);
+                }
 
                 ImGui::TreePop();
             }

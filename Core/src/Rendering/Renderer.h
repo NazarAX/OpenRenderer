@@ -27,11 +27,11 @@ public:
 	Renderer();
 	~Renderer() {}
 
-	void SetupShaderUniforms(Material &material, Transform transform);
+	void SetupShaderUniforms(Material material, Transform transform);
 
 	void BeginScene(std::shared_ptr<Camera> camera);
 	void DrawQuad(Shader& shader);
-	void DrawModel(const Model& model, Material& material, const Transform& tranform);
+	void DrawModel(const Model& model, Material material, const Transform& tranform);
 	void DrawScene(Scene& scene);
 	void EndScene();
 

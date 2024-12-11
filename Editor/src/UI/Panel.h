@@ -12,10 +12,12 @@
 struct FrameStats;
 
 
-namespace EditorUI
+namespace UI
 {
     void DrawMainMenuBar();
     void DrawSettingsPanel(FrameStats frameStats);
     void DrawHierarchyPanel(Scene* scene, entt::entity& selected);
     void DrawSceneViewPanel(FrameBuffer* frameBuffer, Camera* viewCamera);
+
+
 }  

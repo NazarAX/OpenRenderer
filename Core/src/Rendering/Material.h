@@ -17,4 +17,5 @@ struct Material
     std::string Name;
 };
 
+
 #endif //MATERIAL_H

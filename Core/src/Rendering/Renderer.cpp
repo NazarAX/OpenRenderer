@@ -57,7 +57,7 @@ void Renderer::DrawQuad(Shader& shader)
 }
 
 
-void Renderer::DrawModel(const Model& model, Material& material, const Transform& transform)
+void Renderer::DrawModel(const Model& model, Material material, const Transform& transform)
 {
 	std::vector<Mesh> meshes = model.GetMeshes();
 
@@ -72,7 +72,7 @@ void Renderer::DrawModel(const Model& model, Material& material, const Transform
 	}
 }
 
-void Renderer::SetupShaderUniforms(Material &material, Transform transform)
+void Renderer::SetupShaderUniforms(Material material, Transform transform)
 {
 
 	static glm::vec3 lightDisplacement = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -103,7 +103,11 @@ void Renderer::DrawScene(Scene &scene)
 	{
 		Model& model = scene.GetComponent<Model>(entity);
 		Transform& transform = scene.GetComponent<Transform>(entity);
-		Material& material = scene.GetComponent<Material>(entity);
+
+		Material material = Material{Texture::DefaultTexture, Shader::DefaultShader, "default"};
+
+		if (scene.HasComponent<Material>(entity))
+			material = scene.GetComponent<Material>(entity);
 
 		DrawModel(model, material, transform);
 	}

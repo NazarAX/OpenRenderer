@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include "Input.h"
+#include "Interface/Abstractions.h"
 
 using namespace Events;
 
@@ -143,6 +144,8 @@ void Window::SetupGL()
         std::cerr << "Failed to initialize GLAD" << std::endl;
         exit(EXIT_FAILURE);
     }
+
+	InitDefaultStructures();
 
     const GLubyte* renderer = glGetString(GL_RENDERER);
     const GLubyte* version = glGetString(GL_VERSION);

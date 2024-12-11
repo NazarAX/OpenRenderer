@@ -31,15 +31,15 @@ Application::Application()
     renderer = std::make_unique<Renderer>();
     renderer->AddLight(PointLight{glm::vec3(0), glm::vec3(1), 1});
 
-    EditorUI::Init();
+    UI::Init();
 
     //Configuring editorUI
 
 
 
 
-    Material snailMat = Material{Texture("res/textures/snail_color.png"), Shader("res/shaders/modelShader.glsl"), "snailMaterial"};
-    Material trophyMat = Material{Texture("res/textures/DefaultMaterial_baseColor.jpeg"), Shader("res/shaders/modelShader.glsl"), "trophyMaterial"};
+    Material snailMat = Material{Texture("res/textures/snail_color.png"), Shader("res/shaders/default.glsl"), "snailMaterial"};
+    Material trophyMat = Material{Texture("res/textures/DefaultMaterial_baseColor.jpeg"), Shader("res/shaders/default.glsl"), "trophyMaterial"};
 
     auto snail1 = scene.CreateEntity("snail 1");
     auto snail2 = scene.CreateEntity("snail 2");
@@ -89,15 +89,15 @@ void Application::Run()
         renderer->DrawScene(scene);
         frameBuffer->Unbind();
 
-        EditorUI::Begin();
+        UI::Begin();
 
-        EditorUI::DrawMainMenuBar();
+        UI::DrawMainMenuBar();
 
-        EditorUI::DrawHierarchyPanel(&scene, ent);
-        EditorUI::DrawSceneViewPanel(frameBuffer.get(), camera.get());
-        EditorUI::DrawSettingsPanel(frameStats);
+        UI::DrawHierarchyPanel(&scene, ent);
+        UI::DrawSceneViewPanel(frameBuffer.get(), camera.get());
+        UI::DrawSettingsPanel(frameStats);
 
-        EditorUI::End();
+        UI::End();
 
         Input::update();
         cameraController->UpdateInputs();

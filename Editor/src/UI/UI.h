@@ -90,11 +90,15 @@
 // #endif //USERINTERFACE_H
 
 
-namespace EditorUI
+#include <functional>
+
+namespace UI
 {
     void Init();
     void Begin();
     void End();
     void SetDarkTheme();
 
+    //Make sure to call right after drawing element
+    void FileReplaceableItem(const char** filters, std::function<void(std::string)> onReplace);
 }

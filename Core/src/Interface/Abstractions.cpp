@@ -8,8 +8,18 @@
 #define STB_IMAGE_IMPLEMENTATION  
 #include <stb/stb_image.h>
 
+#include "../../lib/Assimp/code/AssetLib/Blender/BlenderScene.h"
+
+Shader Shader::DefaultShader;
+Texture Texture::DefaultTexture;
 
 
+
+void InitDefaultStructures()
+{
+	Shader::DefaultShader = Shader("res/shaders/default.glsl");
+	Texture::DefaultTexture = Texture("res/textures/default.jpg");
+}
 
 
 Shader::Shader(const std::string& filename)

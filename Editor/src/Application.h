@@ -7,7 +7,7 @@
 
 #include "System/Window.h"
 #include "System/Events/Event.h"
-#include "UI/EditorUI.h"
+#include "UI/UI.h"
 #include "UI/Panel.h"
 #include "Rendering/Camera.h"
 #include "Rendering/Renderer.h"

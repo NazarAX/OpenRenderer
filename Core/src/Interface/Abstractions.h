@@ -64,6 +64,9 @@ public:
 	inline void SetName(const std::string& name) { this->name = name; }
 	inline unsigned int GetId() { return id; }
 
+
+	static Shader DefaultShader;
+
 private:
 	std::string name;
 	std::string vertex;
@@ -88,6 +91,8 @@ public:
 	Texture(unsigned char* data, int width, int height) {}
 	~Texture(){}
 
+	static Texture DefaultTexture;
+
 public:
 	void Bind(unsigned int tex = 0);
 	void Unbind();
@@ -97,3 +102,5 @@ public:
 	inline std::string GetFilePath() { return this->filePath; }
 };
 
+
+void InitDefaultStructures();
