@@ -23,8 +23,8 @@ struct Transform
 struct Name
 {
     std::string name;
-
 };
+
 
 
 class Scene
@@ -41,6 +41,7 @@ public:
     {
         auto entity = registry.create();
         registry.emplace<Name>(entity, name);
+        registry.emplace<bool>(entity, true);
         return entity;
     }
 
@@ -55,12 +56,18 @@ public:
     }
 
 
+
+    bool& Active(entt::entity entity)
+    {
+        return registry.get<bool>(entity);
+    }
+
+
     entt::registry& GetRegistry() { return registry; }
 
     template<typename T,typename... Args> T& AddComponent(entt::entity entity,Args&&... args)
     {
-        registry.emplace<T>(entity, std::forward<Args>(args)...);
-        return registry.get<T>(entity);
+        return registry.get_or_emplace<T>(entity, std::forward<Args>(args)...);
     }
 
     template<typename T>
@@ -83,9 +90,13 @@ public:
     }
 
     template<typename T>
-    bool HasComponent(entt::entity entity) {
-        if (registry.all_of<T>(entity))
-            return true;
+    bool HasComponent(entt::entity entity)
+    {
+        if (registry.valid(entity))
+        {
+            if (registry.all_of<T>(entity)) return true;
+        }
+
         return false;
     }
 

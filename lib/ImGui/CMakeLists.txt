@@ -9,3 +9,5 @@ file(GLOB_RECURSE HEADERS "*.h")
 add_library(imgui ${SOURCES} ${HEADERS})
 
 target_include_directories(imgui PUBLIC "../GLFW/include")
+
+target_link_libraries(imgui PRIVATE glfw)

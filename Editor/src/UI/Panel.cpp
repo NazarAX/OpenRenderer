@@ -112,7 +112,6 @@ namespace EditorUI
     {
         ImGui::Begin("Properties");
 
-        std::vector<std::type_index> missingComponents;
         if (scene->HasComponent<Name>(selected))
         {
             auto& name = scene->GetComponent<Name>(selected).name;
@@ -132,22 +131,14 @@ namespace EditorUI
 
             if (ImGui::TreeNodeEx("Transform"))
             {
-                // Position
                 ImGui::DragFloat3("Position", &transform.position.x, 0.1f);
-
-                // Rotation
                 ImGui::DragFloat3("Rotation", &transform.rotation.x, 1.0f);
-
-                // Scale
                 ImGui::DragFloat3("Scale", &transform.scale.x, 0.1f);
 
                 ImGui::TreePop();
             }
         }
-        else
-        {
-            missingComponents.push_back(typeid(Transform));
-        }
+        
 
         if (scene->HasComponent<Model>(selected))
         {
@@ -160,10 +151,7 @@ namespace EditorUI
                 ImGui::TreePop();
             }
         }
-        else
-        {
-            missingComponents.push_back(typeid(Model));
-        }
+        
 
         if (scene->HasComponent<Material>(selected))
         {
@@ -180,21 +168,31 @@ namespace EditorUI
                 ImGui::TreePop();
             }
         }
-        else
-        {
-            missingComponents.push_back(typeid(Material));
-        }
+       
         
-        if (ImGui::BeginPopup("Components"))
+        if (ImGui::BeginPopup("ComponentContext"))
         {
+            if (ImGui::MenuItem("Transform"))
+            {
+                scene->AddComponent<Transform>(selected);
+            }
 
-            
+            if (ImGui::MenuItem("Material"))
+            {
+                scene->AddComponent<Material>(selected);
+            }
+
+            if (ImGui::MenuItem("Model"))
+            {
+                scene->AddComponent<Model>(selected);
+            }
+
             ImGui::EndPopup();
         }
 
         if (ImGui::Button("Add Component"))
         {
-            ImGui::OpenPopup("Components");
+            ImGui::OpenPopup("ComponentContext");
         }
 
         ImGui::End();
@@ -209,55 +207,58 @@ namespace EditorUI
 
         ImGui::Begin("Hierarchy");
 
-        entt::entity hovered;
+        static entt::entity hovered = entt::null;
 
-        std::cout << "nameComponent.name";
-        scene->GetRegistry().each([scene, &selected, &hovered](auto entity)
-        {
-            auto& nameComponent = scene->GetComponent<Name>(entity);
+        auto view = scene->GetRegistry().view<Name>();
 
-            // Create a selectable item for the entity
-            if (ImGui::Selectable(nameComponent.name.c_str(), selected == entity))
-            {
-                // Handle selection logic
-                selected = entity; // Update the selected entity
+        for (auto entity : view) {
+            auto& nameComponent = view.get<Name>(entity);
+
+            if (ImGui::Selectable(nameComponent.name.c_str(), selected == entity)) {
+                selected = entity;
             }
 
-            if (ImGui::IsItemHovered() && ImGui::IsMouseDown(1))
+            if (ImGui::IsMouseDown(1) && ImGui::IsItemHovered())
             {
                 hovered = entity;
+                ImGui::OpenPopup("RightClickPopup");
             }
-        });
+        }
+
 
 
         if (ImGui::BeginPopup("RightClickPopup")) // Check if the popup is open
         {
             if (ImGui::MenuItem("Delete")) // Add a "Delete" menu item
             {
-                if (hovered != entt::null)
+                if (scene->GetRegistry().valid(hovered) && hovered != entt::null)  // Check if the entity is valid before deletion
                 {
-                    // Handle deletion of the hovered entity
-                    scene->DeleteEntity(hovered);  // Delete the entity from the registry
-                    hovered = entt::null;  // Reset hovered entity after deletion
+                    std::cout << "Deleting entity " << scene->GetComponent<Name>(hovered).name << std::endl;
+                    scene->GetRegistry().destroy(hovered);
+                    hovered = entt::null;
                 }
             }
 
             if (ImGui::MenuItem("Deactivate")) // Add a "Deactivate" menu item
             {
-                if (hovered != entt::null)
-                {
-                    // Handle deactivation of the hovered entity (you can add your deactivation logic here)
-                    // Example: scene->DeactivateEntity(hovered);
-                    hovered = entt::null;  // Reset hovered entity after deactivation
-                }
+                hovered = entt::null;
             }
+            
+
 
             ImGui::EndPopup(); // End the popup
         }
 
+
+        static int emptyId = 0;
+        //Not finished (Simple solution for now)
         if (ImGui::Button("Create Empty Entity"))
         {
-            scene->CreateEntity("Empty");
+            if (emptyId == 0)
+                scene->CreateEntity("Empty");
+            else 
+                scene->CreateEntity("Empty (" + std::to_string(emptyId) + ")");
+            emptyId++;
         }
 
 
