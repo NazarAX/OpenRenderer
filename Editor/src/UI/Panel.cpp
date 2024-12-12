@@ -154,6 +154,13 @@ namespace UI
             if (ImGui::TreeNodeEx("Mesh"))
             {
                 ImGui::Text(std::string("Mesh "  + model.GetName()).c_str());
+                const char* filters[] = {"*.obj", "*.fbx", "*.gltf"};
+
+                ImGui::Button("Load");
+                FileReplaceableItem(filters, [&model](std::string name)
+                {
+                    model = Model(name);
+                });
 
                 if (ImGui::Button("Remove"))
                 {
@@ -176,13 +183,13 @@ namespace UI
                 ImGui::Text("Albedo");
                 ImGui::Image(material.Albedo.GetId(), ImVec2(100, 100));
 
-                const char* filters[] = {".png", ".jpg", ".jpeg"};
+                const char* filters[] = {"*.png", "*.jpg", "*.jpeg"};
 
+                ImGui::Button("Load");
                 FileReplaceableItem(filters, [&material](std::string name)
                 {
                     material.Albedo = Texture(name);
                 });
-
 
 
                 if (ImGui::Button("Remove"))
@@ -204,7 +211,7 @@ namespace UI
 
             if (ImGui::MenuItem("Material"))
             {
-                scene->AddComponent<Material>(selected);
+                scene->AddComponent<Material>(selected, Material{Texture::DefaultTexture, Shader::DefaultShader, "default"});
             }
 
             if (ImGui::MenuItem("Model"))
