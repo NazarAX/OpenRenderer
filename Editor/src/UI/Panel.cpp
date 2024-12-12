@@ -77,8 +77,28 @@ namespace UI
             if (ImGui::BeginMenu("File"))
             {
                 if (ImGui::MenuItem("New", "Ctrl+N")) { /* Handle New */ }
-                if (ImGui::MenuItem("Open", "Ctrl+O")) { /* Handle Open */ }
-                if (ImGui::MenuItem("Save", "Ctrl+S")) { /* Handle Save */ }
+                if (ImGui::MenuItem("Open", "Ctrl+O"))
+                {
+                    const char* filters[] = {"*.*", "*.yaml", "*.txt"};
+                    const char* scenePath = tinyfd_openFileDialog(
+                        "Open Scene", "", 3, filters, "YAML Files", 0
+                    );
+                    if (scenePath)
+                    {
+                        std::shared_ptr<Scene> scene = Serializer::Deserialize(scenePath);
+                        Application::GetInstance()->SetScene(scene);
+                    }
+                }
+                if (ImGui::MenuItem("Save", "Ctrl+S"))
+                {
+                    Scene* scene = Application::GetInstance()->GetScene();
+
+                    const char* savePath = tinyfd_saveFileDialog(
+                        "Save File", std::string(scene->GetName() + ".yaml").c_str(), 0, NULL, NULL
+                    );
+
+                    if (savePath) Serializer::Serialize(Application::GetInstance()->GetScene(), savePath);
+                }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Exit", "Alt+F4")) { /* Handle Exit */ }
                 ImGui::EndMenu();
@@ -154,13 +174,19 @@ namespace UI
             if (ImGui::TreeNodeEx("Mesh"))
             {
                 ImGui::Text(std::string("Mesh "  + model.GetName()).c_str());
-                const char* filters[] = {"*.obj", "*.fbx", "*.gltf"};
 
-                ImGui::Button("Load");
-                FileReplaceableItem(filters, [&model](std::string name)
+                if (ImGui::Button("Load"))
                 {
-                    model = Model(name);
-                });
+                    const char* filters[] = {"*.obj", "*.fbx", "*.gltf"};
+
+                    const char* filePath = tinyfd_openFileDialog(
+                        "Select a File", "", 1, filters,  "All Files", NULL);
+
+                    if (filePath)
+                    {
+                        model = Model(filePath);
+                    }
+                }
 
                 if (ImGui::Button("Remove"))
                 {
@@ -183,13 +209,19 @@ namespace UI
                 ImGui::Text("Albedo");
                 ImGui::Image(material.Albedo.GetId(), ImVec2(100, 100));
 
-                const char* filters[] = {"*.png", "*.jpg", "*.jpeg"};
 
-                ImGui::Button("Load");
-                FileReplaceableItem(filters, [&material](std::string name)
+                if (ImGui::Button("Load"))
                 {
-                    material.Albedo = Texture(name);
-                });
+                    const char* filters[] = {"*.png", "*.jpg", "*.jpeg"};
+
+                    const char* filePath = tinyfd_openFileDialog(
+                        "Select a File", "", 1, filters,  "All Files", NULL);
+
+                    if (filePath)
+                    {
+                        material.Albedo = Texture(filePath);
+                    }
+                }
 
 
                 if (ImGui::Button("Remove"))

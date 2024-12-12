@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "Interface/FrameBuffer.h"
+#include "Rendering/Serializer.h"
 
 
 
@@ -22,12 +23,13 @@ class Application {
 private:
     static Application* instance;
     Window window;
-    Scene scene;
+    std::shared_ptr<Scene> scene;
     FrameStats frameStats;
     std::unique_ptr<Renderer> renderer;
     std::shared_ptr<CameraController> cameraController;
     std::shared_ptr<Camera> camera;
     std::shared_ptr<FrameBuffer> frameBuffer;
+    Serializer serializer;
 
 private:
     Application();
@@ -36,7 +38,8 @@ public:
 
     void Run();
 
-    Scene* GetScene() { return &scene; }
+    Scene* GetScene() { return scene.get(); }
+    void SetScene(std::shared_ptr<Scene> scene) { this->scene = scene; }
 
     static void EventCallback(Events::Event& event);
 

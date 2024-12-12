@@ -12,7 +12,7 @@ class Serializer
 {
 public:
     static void Serialize(Scene* scene, const std::string& filename);
-    static Scene* Deserialize(const std::string& filename);
+    static std::shared_ptr<Scene> Deserialize(const std::string& filename);
 };
 
 

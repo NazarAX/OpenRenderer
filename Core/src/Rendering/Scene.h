@@ -36,6 +36,9 @@ public:
     Scene() : name("Unnamed scene") {}
     Scene(std::string  name) : name(std::move(name)) {}
     ~Scene() {}
+
+    Scene(Scene&) = default;
+    Scene& operator=(Scene& scene) = default;
 public:
     entt::entity CreateEntity(const std::string& name)
     {

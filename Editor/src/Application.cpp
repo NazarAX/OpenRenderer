@@ -12,12 +12,13 @@ Application* Application::instance;
 Application::Application()
     :
     window({1920, 1080, "OpenRenderer"}),
-    scene("BaseScene"), frameStats({0, 0})
+    frameStats({0, 0})
 {
 
     window.SetEventCallback(Application::EventCallback);
     Window::currentWindow = &window;
 
+    scene = std::make_shared<Scene>("EmptyScene");
     
 
     frameBuffer = std::make_shared<FrameBuffer>(window.GetWidth(), window.GetHeight());
@@ -37,37 +38,35 @@ Application::Application()
 
 
 
-
-    Material snailMat = Material{Texture("res/textures/snail_color.png"), Shader("res/shaders/default.glsl"), "snailMaterial"};
-    Material trophyMat = Material{Texture("res/textures/DefaultMaterial_baseColor.jpeg"), Shader("res/shaders/default.glsl"), "trophyMaterial"};
-
-    auto snail1 = scene.CreateEntity("snail 1");
-    auto snail2 = scene.CreateEntity("snail 2");
-    auto trophy = scene.CreateEntity("trophy");
-
-    scene.AddComponent<Transform>(trophy);
-
-    scene.GetComponent<Transform>(trophy).position = glm::vec3(10.0f, 20.0f, 3.0f);
-    scene.GetComponent<Transform>(trophy).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
-
-    scene.AddComponent<Model>(snail1,  "res/models/Snail.obj");
-    scene.AddComponent<Transform>(snail1);
-    scene.AddComponent<Material>(snail1, snailMat);
-
-    scene.GetComponent<Transform>(snail1).position = glm::vec3(10.0f, 0.0f, 3.0f);
-    scene.GetComponent<Transform>(snail1).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
-
-
-    scene.AddComponent<Model>(snail2,  "res/models/scene.gltf");
-    scene.AddComponent<Transform>(snail2);
-    scene.AddComponent<Material>(snail2, trophyMat);
-
-
-
-    scene.GetComponent<Transform>(snail1).position = glm::vec3(0.0f, 0.0f, 3.0f);
-    scene.GetComponent<Transform>(snail1).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
-
-    Serializer::Serialize(&scene, "scene.yaml");
+    //
+    // Material snailMat = Material{Texture("res/textures/snail_color.png"), Shader("res/shaders/default.glsl"), "snailMaterial"};
+    // Material trophyMat = Material{Texture("res/textures/DefaultMaterial_baseColor.jpeg"), Shader("res/shaders/default.glsl"), "trophyMaterial"};
+    //
+    // auto snail1 = scene->CreateEntity("snail 1");
+    // auto snail2 = scene->CreateEntity("snail 2");
+    // auto trophy = scene->CreateEntity("trophy");
+    //
+    // scene.AddComponent<Transform>(trophy);
+    //
+    // scene.GetComponent<Transform>(trophy).position = glm::vec3(10.0f, 20.0f, 3.0f);
+    // scene.GetComponent<Transform>(trophy).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
+    //
+    // scene.AddComponent<Model>(snail1,  "res/models/Snail.obj");
+    // scene.AddComponent<Transform>(snail1);
+    // scene.AddComponent<Material>(snail1, snailMat);
+    //
+    // scene.GetComponent<Transform>(snail1).position = glm::vec3(10.0f, 0.0f, 3.0f);
+    // scene.GetComponent<Transform>(snail1).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
+    //
+    //
+    // scene.AddComponent<Model>(snail2,  "res/models/scene.gltf");
+    // scene.AddComponent<Transform>(snail2);
+    // scene.AddComponent<Material>(snail2, trophyMat);
+    //
+    //
+    //
+    // scene.GetComponent<Transform>(snail1).position = glm::vec3(0.0f, 0.0f, 3.0f);
+    // scene.GetComponent<Transform>(snail1).rotation = glm::vec3(40.0f, 10.0f, 2.0f);
 }
 
 
@@ -86,14 +85,14 @@ void Application::Run()
 
         frameBuffer->Bind();
         renderer->BeginScene(camera);
-        renderer->DrawScene(scene);
+        renderer->DrawScene(*scene.get());
         frameBuffer->Unbind();
 
         UI::Begin();
 
         UI::DrawMainMenuBar();
 
-        UI::DrawHierarchyPanel(&scene, ent);
+        UI::DrawHierarchyPanel(scene.get(), ent);
         UI::DrawSceneViewPanel(frameBuffer.get(), camera.get());
         UI::DrawSettingsPanel(frameStats);
 

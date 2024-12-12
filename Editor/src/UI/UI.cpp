@@ -15,26 +15,6 @@
 
 namespace UI
 {
-    void FileReplaceableItem(const char** filters ,std::function<void(std::string)> onReplace)
-    {
-        // Check for interaction (e.g., clicking the image or element)
-        if (ImGui::IsItemClicked()) {
-            // Open file dialog to select a new file
-            const char* filePath = tinyfd_openFileDialog(
-                "Select a File",
-                "",
-                1,
-                filters,  // You can provide a filter here
-                "All Files",
-                0
-            );
-
-            if (filePath) {
-                // Trigger the onReplace callback with the new file path
-                onReplace(filePath);
-            }
-        }
-    }
 
     void Init()
     {

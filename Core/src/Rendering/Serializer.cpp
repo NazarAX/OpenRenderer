@@ -8,12 +8,26 @@
 
 
 
+glm::vec3 DeserializeVec3(YAML::Node node, std::string key)
+{
+    glm::vec3 vector;
+    if (node[key].IsSequence())
+    {
+        vector.x = node[key][0].as<float>();
+        vector.y = node[key][1].as<float>();
+        vector.z = node[key][2].as<float>();
+    }
+
+    return vector;
+}
+
 void Serializer::Serialize(Scene* scene, const std::string& filename)
 {
     YAML::Emitter emitter;
     emitter << YAML::BeginMap;
     emitter << YAML::Key << "Scene";
     emitter << YAML::BeginSeq;
+
 
     for (entt::entity entity : scene->GetEntitiesWithComponent<Name>())
     {
@@ -54,7 +68,7 @@ void Serializer::Serialize(Scene* scene, const std::string& filename)
         if (scene->HasComponent<Model>(entity))
         {
             Model& model = scene->GetComponent<Model>(entity);
-            emitter << YAML::Key << "Model" << YAML::Value << model.GetName();
+            emitter << YAML::Key << "Model" << YAML::Value << model.GetFileName();
         }
 
         if (scene->HasComponent<Material>(entity))
@@ -76,8 +90,40 @@ void Serializer::Serialize(Scene* scene, const std::string& filename)
     File::writeFile(filename, emitter.c_str());
 }
 
-Scene* Serializer::Deserialize(const std::string& filename)
+std::shared_ptr<Scene> Serializer::Deserialize(const std::string& filename)
 {
-
     YAML::Node root = YAML::LoadFile(filename);
+
+    std::shared_ptr<Scene> scene = std::make_shared<Scene>(filename);
+
+    for (auto node : root["Scene"])
+    {
+        auto entity = scene->CreateEntity(node["Name"].as<std::string>());
+        if (node["Transform"])
+        {
+            glm::vec3 position = DeserializeVec3(node["Transform"], "Position");
+            glm::vec3 rotation = DeserializeVec3(node["Transform"], "Rotation");
+            glm::vec3 scale = DeserializeVec3(node["Transform"], "Scale");
+
+            std::cout << position.x << std::endl;
+
+            scene->AddComponent<Transform>(entity, position, rotation, scale);
+        }
+
+        if (node["Model"])
+        {
+            std::string filename = node["Model"].as<std::string>();
+            scene->AddComponent<Model>(entity, filename);
+        }
+
+        if (node["Material"])
+        {
+            std::string albedo = node["Material"]["Albedo"].as<std::string>();
+            std::string shader = node["Material"]["Shader"].as<std::string>();
+
+            scene->AddComponent<Material>(entity, Texture(albedo), Shader::DefaultShader, "x");
+        }
+    }
+
+    return scene;
 }

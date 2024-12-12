@@ -24,9 +24,10 @@ class Model {
 private:
     std::vector<Mesh> meshes;
     std::string name;
+    std::string filename;
 public:
     Model() = default;
-    Model(const std::string& fileName) {
+    Model(const std::string& fileName) : filename(fileName){
         LoadFromFile(fileName);
     }
     ~Model() = default;
@@ -34,6 +35,7 @@ public:
     void LoadFromFile(const std::string& fileName);
 
     std::string GetName() const { return name; }
+    std::string GetFileName() const { return filename; }
     const std::vector<Mesh>& GetMeshes() const { return meshes; }
 };
 
