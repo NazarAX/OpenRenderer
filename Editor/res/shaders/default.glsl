@@ -14,7 +14,11 @@ uniform mat4 uView;      // View matrix
 uniform mat4 uProjection; // Projection matrix
 
 void main() {
-    gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
+    mat4 mvp = uProjection * uView * uModel;
+
+    // Invert the model-view-projection matrix
+
+    gl_Position = mvp * vec4(aPosition, 1.0);
 
     vFragPos = vec3(uModel * vec4(aPosition, 1.0f));
 

@@ -91,6 +91,8 @@
 
 
 #include <functional>
+#include <glm/fwd.hpp>
+#include "Rendering/Scene.h"
 
 namespace UI
 {
@@ -98,4 +100,6 @@ namespace UI
     void Begin();
     void End();
     void SetDarkTheme();
+    void DrawGuizmo(glm::mat4 view, glm::mat4 projection, Transform& transform, float scale);
+
 }

@@ -80,6 +80,14 @@ void Serializer::Serialize(Scene* scene, const std::string& filename)
             emitter << YAML::EndMap;
         }
 
+        if (scene->HasComponent<Camera>(entity))
+        {
+            Camera& camera = scene->GetComponent<Camera>(entity);
+            emitter << YAML::Key << "Camera" << YAML::Value << YAML::BeginMap;
+            emitter << YAML::Key << "Primary" << YAML::Value << camera.IsPrimary();
+            emitter << YAML::EndMap;
+        }
+
 
         emitter << YAML::EndMap;
     }
@@ -122,6 +130,12 @@ std::shared_ptr<Scene> Serializer::Deserialize(const std::string& filename)
             std::string shader = node["Material"]["Shader"].as<std::string>();
 
             scene->AddComponent<Material>(entity, Texture(albedo), Shader::DefaultShader, "x");
+        }
+
+        if (node["Camera"])
+        {
+            bool primary = node["Camera"]["Primary"].as<bool>();
+            scene->AddComponent<Camera>(entity, primary);
         }
     }
 

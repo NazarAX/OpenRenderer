@@ -12,6 +12,13 @@
 #include "GLFW/glfw3.h"
 #include "System/Window.h"
 #include <tinyfiledialogs.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <ImGuizmo/ImGuizmo.h>
+
+#include "imgui_internal.h"
+#include "Rendering/Scene.h"
 
 namespace UI
 {
@@ -60,6 +67,7 @@ namespace UI
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
         ImGui::DockSpaceOverViewport();
     }
 
@@ -67,6 +75,7 @@ namespace UI
     {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 
         ImGuiIO& io = ImGui::GetIO();
 
@@ -91,4 +100,38 @@ namespace UI
         colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
         colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
     }
+
+    void DrawGuizmo(glm::mat4 view, glm::mat4 projection, Transform& transform, float scale)
+    {
+        // Set orthogonal projection
+        ImGuizmo::BeginFrame();
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+
+        glm::mat4 model = transform.GetModel();
+
+        ImGuizmo::Manipulate(glm::value_ptr(view),
+                                 glm::value_ptr(projection),
+                                 ImGuizmo::OPERATION::TRANSLATE,
+                                 ImGuizmo::WORLD,
+                                 glm::value_ptr(model));
+
+        ImGui::DebugDrawItemRect();
+
+        std::cout << "guizmo view : "<< glm::to_string(view) << std::endl;
+
+        if (ImGuizmo::IsUsing())
+        {
+            glm::vec3 newPosition, newRotation, newScale;
+            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model),
+                                                  glm::value_ptr(newPosition),
+                                                  glm::value_ptr(newRotation),
+                                                  glm::value_ptr(newScale));
+            transform.position = newPosition;
+            transform.rotation = newRotation;
+            transform.scale = newScale;
+        }
+    }
+
 }

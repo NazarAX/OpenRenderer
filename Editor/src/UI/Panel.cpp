@@ -16,6 +16,10 @@
 #include <tinyfiledialogs.h>
 #include <typeindex>
 #include <type_traits>
+#include <glm/gtc/type_ptr.hpp>
+#include "UI.h"
+#include "ImGuizmo/ImGuizmo.h"
+#include "glm/glm.hpp"
 
 
 
@@ -25,37 +29,74 @@
 
 namespace UI
 {
+void DrawSceneViewPanel(FrameBuffer* frameBuffer, Camera& viewCamera, entt::entity selected, Scene* scene)
+{
+    ImGui::Begin("Scene View");
+    static ImVec2 prevSize(0,0);
 
-    void DrawSceneViewPanel(FrameBuffer* frameBuffer, Camera* viewCamera)
+    // Check if the size has changed
+    ImVec2 currentPanelSize = ImGui::GetContentRegionAvail();
+    if (currentPanelSize.x != prevSize.x || currentPanelSize.y != prevSize.y)
     {
+        prevSize = currentPanelSize;
+        viewCamera.Reset(currentPanelSize.x, currentPanelSize.y);
+        frameBuffer->Update(currentPanelSize.x, currentPanelSize.y);
+    }
 
-        ImGui::Begin("Scene View");
-        static ImVec2 prevSize(0,0);
-
-        // Check if the size has changed
-
-        ImVec2 currentPanelSize = ImGui::GetContentRegionAvail();
-
-        if (currentPanelSize.x != prevSize.x || currentPanelSize.y !=  prevSize.y)
-        {
-            prevSize = currentPanelSize;
-
-            viewCamera->Reset(currentPanelSize.x, currentPanelSize.y);
-            frameBuffer->Update(currentPanelSize.x, currentPanelSize.y);
-        }
-
-        // Check if the texture ID is valid
-        if (frameBuffer && frameBuffer->GetTextureId() != 0) {
-            // Render the framebuffer texture
-            ImGui::Image(frameBuffer->GetTextureId(),
-                        ImVec2(frameBuffer->GetWidth(), frameBuffer->GetHeight()),
-                        ImVec2(0, 1), ImVec2(1, 0)); // Flip texture coordinates (bottom-left to top-left)
-        } else {
-            ImGui::Text("Invalid framebuffer texture");
-        }
-
+    // Check if the texture ID is valid
+    if (!(frameBuffer && frameBuffer->GetTextureId() != 0))
+    {
+        ImGui::Text("Invalid framebuffer texture");
         ImGui::End();
     }
+
+    // Render the framebuffer texture
+    ImGui::Image(frameBuffer->GetTextureId(),
+                 ImVec2(frameBuffer->GetWidth(), frameBuffer->GetHeight()),
+                 ImVec2(0, 1), ImVec2(1, 0)); // Flip texture coordinates (bottom-left to top-left)
+
+    ImGuizmo::SetDrawlist();
+    ImGuizmo::SetOrthographic(false);
+    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+
+
+    // Drawing Gizmo for selected entity
+    if (scene->HasComponent<Model>(selected))
+    {
+        Transform& transform = scene->GetComponent<Transform>(selected);
+
+        // Set up Gizmo
+
+        glm::mat4 model = transform.GetModel();
+        ImGuizmo::DrawGrid(glm::value_ptr(viewCamera.GetView()), glm::value_ptr(viewCamera.GetProjection()), glm::value_ptr(model), 100.f);
+        ImGuizmo::DrawCubes(glm::value_ptr(viewCamera.GetView()),
+            glm::value_ptr(viewCamera.GetProjection()),
+            glm::value_ptr(model), 1);
+
+        // Manipulate Gizmo
+        ImGuizmo::Manipulate(glm::value_ptr(viewCamera.GetView()),
+                             glm::value_ptr(viewCamera.GetProjection()),
+                             ImGuizmo::OPERATION::TRANSLATE,
+                             ImGuizmo::WORLD,
+                             glm::value_ptr(model));
+
+        if (ImGuizmo::IsUsing())
+        {
+            glm::vec3 newPosition, newRotation, newScale;
+            ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(model),
+                                                  glm::value_ptr(newPosition),
+                                                  glm::value_ptr(newRotation),
+                                                  glm::value_ptr(newScale));
+
+            transform.position = newPosition;
+            transform.rotation = newRotation;
+            transform.scale = newScale;
+        }
+    }
+
+    ImGui::End();
+}
+
 
 
     void DrawSettingsPanel(FrameStats frameStats) 
@@ -157,6 +198,12 @@ namespace UI
                 ImGui::DragFloat3("Rotation", &transform.rotation.x, 1.0f);
                 ImGui::DragFloat3("Scale", &transform.scale.x, 0.1f);
 
+                if (scene->HasComponent<Camera>(selected))
+                {
+                    Camera& camera = scene->GetComponent<Camera>(selected);
+                    camera.UpdateView(transform);
+                }
+
                 if (ImGui::Button("Remove"))
                 {
                     scene->RemoveComponent<Transform>(selected);
@@ -227,6 +274,22 @@ namespace UI
                 if (ImGui::Button("Remove"))
                 {
                     scene->RemoveComponent<Material>(selected);
+                }
+
+                ImGui::TreePop();
+            }
+        }
+
+        if (scene->HasComponent<Camera>(selected))
+        {
+            Camera& camera = scene->GetComponent<Camera>(selected);
+
+            if (ImGui::TreeNodeEx("Camera"))
+            {
+                ImGui::Text(("Is Primary : " + std::string(camera.IsPrimary()? "Yes" : "No")).c_str());
+                if (ImGui::Button("Remove"))
+                {
+                    scene->RemoveComponent<Camera>(selected);
                 }
 
                 ImGui::TreePop();

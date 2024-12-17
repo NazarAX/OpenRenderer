@@ -86,5 +86,22 @@ public:
 
 };
 
+class UniformBuffer
+{
+private:
+	unsigned int m_RendererID;
+	unsigned int m_Slot;
+public:
+	UniformBuffer();
+	UniformBuffer(const void* data, unsigned int size);
+	~UniformBuffer() {}
 
+	void Bind(unsigned int slot);
+	void Unbind();
+
+	void UploadData(const void* data, unsigned int size);
+
+	unsigned int GetId() const { return m_RendererID; }
+	unsigned int GetSlot() const { return m_Slot; }
+};
 

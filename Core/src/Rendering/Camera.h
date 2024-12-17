@@ -6,65 +6,60 @@
 #define CAMERA_H
 
 #include <memory>
-#include <glm/glm.hpp>
-
 #include "Interface/FrameBuffer.h"
+#include "Components.h"
 
-struct CameraTransform
-{
-    glm::vec3 pos;
-    glm::vec3 front;
-    glm::vec3 up;
-
-    float zoom;
-    float pitch;
-    float yaw;
-};
 
 
 class Camera
 {
 private:
-    CameraTransform transform;
+    Transform transform;
     glm::mat4 projection;
     glm::mat4 view;
-    FrameBuffer* frameBuffer;
-private:
-    void UpdateView();
+
+    glm::vec3 front;
+    glm::vec3 up;
+    bool primary;
 public:
-    Camera() {}
-    Camera(float w, float h, float fov);
+    Camera() : up(0, 1, 0) {}
+    Camera(bool _primary)  : primary(_primary), up(0, 1, 0) {}
+    Camera(float w, float h, float fov, bool primary);
 
     void Reset(float width, float height, float fov = 90.0f);
-    void Move(glm::vec3 delta);
-    void SetPosition(glm::vec3 _pos);
+    void UpdateView(Transform& transform);
 
     void SetZoom(float zoom);
-    void SetPitch(float pitch);
-    void SetYaw(float yaw);
-    void Turn(float delta_pitch, float delta_yaw);
 
-    glm::vec3 GetRight() const { return glm::cross(transform.front, transform.up); }
-    glm::vec3 GetFront() const { return transform.front; }
-    glm::vec3 GetPosition() const{ return transform.pos; }
+    Transform GetTransform() { return transform; }
+
+
+    bool IsPrimary() { return primary; }
+    void SetPrimary(bool _primary) { primary = _primary; }
+
+    glm::vec3 GetRight() const { return glm::cross(front, up); }
+    glm::vec3 GetFront() const { return front; }
 
     glm::mat4 GetView() const { return view; }
     glm::mat4 GetProjection() const { return projection; }
-    static glm::mat4 GetModel(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale=glm::vec3(1));
-
-    void SetFrameBuffer(FrameBuffer* _fb) { frameBuffer = _fb; }
 };
 
 
 class CameraController
 {
 private:
-    std::shared_ptr<Camera> camera;
+    Camera& camera;
+    Transform& transform;
+    float sensitivity;
+
 public:
-    CameraController(std::shared_ptr<Camera> _camera) : camera(_camera){}
+    CameraController(Camera& _camera, Transform& _transform, float _sensitivity)
+    : camera(_camera), transform(_transform), sensitivity(_sensitivity) {}
+
     ~CameraController() {}
 
-    void UpdateInputs();
+    void Update();
+    float GetSensitivity() const { return sensitivity; }
 };
 
 

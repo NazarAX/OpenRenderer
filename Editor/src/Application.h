@@ -7,12 +7,9 @@
 
 #include "System/Window.h"
 #include "System/Events/Event.h"
-#include "UI/UI.h"
-#include "UI/Panel.h"
 #include "Rendering/Camera.h"
 #include "Rendering/Renderer.h"
 #include "Rendering/Scene.h"
-#include <memory>
 
 #include "Interface/FrameBuffer.h"
 #include "Rendering/Serializer.h"
@@ -27,8 +24,9 @@ private:
     FrameStats frameStats;
     std::unique_ptr<Renderer> renderer;
     std::shared_ptr<CameraController> cameraController;
-    std::shared_ptr<Camera> camera;
     std::shared_ptr<FrameBuffer> frameBuffer;
+    entt::entity selected;
+    entt::entity cameraEntity;
     Serializer serializer;
 
 private:

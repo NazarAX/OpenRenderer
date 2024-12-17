@@ -29,7 +29,7 @@ public:
 
 	void SetupShaderUniforms(Material material, Transform transform);
 
-	void BeginScene(std::shared_ptr<Camera> camera);
+	void BeginScene(Camera camera);
 	void DrawQuad(Shader& shader);
 	void DrawModel(const Model& model, Material material, const Transform& tranform);
 	void DrawScene(Scene& scene);
@@ -44,6 +44,6 @@ public:
 
 	VertexArray quadVA;
 	IndexBuffer quadIB;
-	std::shared_ptr<Camera> camera;
+	Camera camera;
 };
 

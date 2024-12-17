@@ -4,8 +4,8 @@
 #include "GLFW/glfw3.h"
 #include <iostream>
 
-
-
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 
 
 
@@ -66,35 +66,24 @@ void Renderer::DrawModel(const Model& model, Material material, const Transform&
 		mesh.vertexArray.Bind();
 		mesh.indexBuffer.Bind();
 
-		SetupShaderUniforms(material, transform);
+
+		material.Shader.Bind();
+		material.Albedo.Bind();
+
+		material.Shader.SetUniformMatrix4fv("uModel", transform.GetModel());
+		material.Shader.SetUniformMatrix4fv("uView", camera.GetView());
+		material.Shader.SetUniformMatrix4fv("uProjection", camera.GetProjection());
+		material.Shader.SetUniformMatrix4fv("uTexture", material.Albedo.GetId());
+
+
+		PointLight light = sceneLight.PointLights[0];
+		material.Shader.SetUniform3f("uLightColor", light.Color);
+		material.Shader.SetUniform3f("uLightPos", light.Position);
+		material.Shader.SetUniform1f("uLightIntensity", light.Intensity);
+		material.Shader.SetUniform3f("uAmbientLight", glm::vec3(0.5f, 0.5f, 0.5f));
 
 		glDrawElements(GL_TRIANGLES, mesh.indexBuffer.GetCount(), GL_UNSIGNED_INT, 0);
 	}
-}
-
-void Renderer::SetupShaderUniforms(Material material, Transform transform)
-{
-
-	static glm::vec3 lightDisplacement = glm::vec3(0.0f, 0.0f, 0.0f);
-	
-
-	material.Shader.Bind();
-	material.Albedo.Bind();
-
-	glm::mat4 modelMatrix = Camera::GetModel(transform.position, transform.rotation);
-
-	material.Shader.SetUniformMatrix4fv("uModel", modelMatrix);
-	material.Shader.SetUniformMatrix4fv("uView", camera->GetView());
-	material.Shader.SetUniformMatrix4fv("uProjection", camera->GetProjection());
-	material.Shader.SetUniformMatrix4fv("uTexture", material.Albedo.GetId());
-
-	PointLight light = sceneLight.PointLights[0];
-	material.Shader.SetUniform3f("uLightColor", light.Color);
-	material.Shader.SetUniform3f("uLightPos", light.Position + lightDisplacement);
-	material.Shader.SetUniform1f("uLightIntensity", light.Intensity);
-	material.Shader.SetUniform3f("uAmbientLight", glm::vec3(0.5f, 0.5f, 0.5f));
-
-
 }
 
 void Renderer::DrawScene(Scene &scene)
@@ -114,7 +103,7 @@ void Renderer::DrawScene(Scene &scene)
 }
 
 
-void Renderer::BeginScene(std::shared_ptr<Camera> camera)
+void Renderer::BeginScene(Camera camera)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.529f,0.808f,0.922f, 1.0);

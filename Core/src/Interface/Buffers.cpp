@@ -133,3 +133,35 @@ void IndexBuffer::Unbind()
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
+
+UniformBuffer::UniformBuffer()
+{
+	glGenBuffers(1, &m_RendererID);
+}
+
+UniformBuffer::UniformBuffer(const void* data, unsigned int size) : m_Slot(0)
+{
+	glGenBuffers(1, &m_RendererID);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
+	glBufferData(GL_UNIFORM_BUFFER, size, data, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void UniformBuffer::Bind(unsigned int slot)
+{
+	m_Slot = slot;
+	glBindBufferBase(GL_UNIFORM_BUFFER, slot, m_RendererID);
+}
+
+void UniformBuffer::Unbind()
+{
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_Slot, 0);
+}
+
+
+void UniformBuffer::UploadData(const void* data, unsigned int size)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, m_RendererID);
+	glBufferData(GL_UNIFORM_BUFFER, size, data, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}

@@ -9,21 +9,13 @@
 #include <entt/entt.hpp>
 #include <stdexcept>
 #include <string>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <iostream>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include "Camera.h"
 #include "System/Input.h"
-
-
-struct Transform
-{
-    glm::vec3 position;
-    glm::vec3 rotation;
-    glm::vec3 scale;
-
-};
-
-struct Name
-{
-    std::string name;
-};
+#include "Components.h"
 
 
 
@@ -43,6 +35,14 @@ public:
     entt::entity CreateEntity(const std::string& name)
     {
         auto entity = registry.create();
+        for (auto e : registry.view<Name>())
+        {
+            if (GetComponent<Name>(e).name == name)
+            {
+                std::cerr << "Entity " << name << " already exists!" << std::endl;
+                return entt::null;
+            }
+        }
         registry.emplace<Name>(entity, name);
         registry.emplace<bool>(entity, true);
         return entity;
@@ -58,6 +58,15 @@ public:
         return entt::null;
     }
 
+    entt::entity GetPrimaryCamera()
+    {
+        for (auto entity : registry.view<Camera>())
+        {
+            Camera camera = registry.get<Camera>(entity);
+            if (camera.IsPrimary())
+                return entity;
+        }
+    }
 
 
     bool& Active(entt::entity entity)

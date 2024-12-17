@@ -18,10 +18,11 @@ target_include_directories(Editor PRIVATE "../lib/GLM")
 target_include_directories(Editor PRIVATE "../lib/ImGui")
 target_include_directories(Editor PRIVATE "../lib/entt")
 target_include_directories(Editor PRIVATE "../lib/TinyFileDialogs")
+target_include_directories(Editor PRIVATE "../lib/ImGuizmo")
 
 
 
-target_link_libraries(Editor PRIVATE Core imgui tfd)
+target_link_libraries(Editor PRIVATE Core imgui tfd imguizmo)
 
 add_custom_target(CopyRes
         COMMAND ${CMAKE_COMMAND} -E copy_directory
