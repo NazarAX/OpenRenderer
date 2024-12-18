@@ -57,8 +57,6 @@ void Application::Run()
         frameBuffer->Bind();
         renderer->BeginScene(camera);
         renderer->DrawScene(*scene.get());
-
-
         frameBuffer->Unbind();
 
         //Drawing UI

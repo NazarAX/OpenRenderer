@@ -48,7 +48,7 @@ void FrameBuffer::Unbind()
 void FrameBuffer::Update(int width, int height)
 {
 	Bind();
-
+	glViewport(0, 0, width, height);
 	// Rebind the existing texture instead of creating a new one
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
