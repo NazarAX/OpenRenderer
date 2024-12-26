@@ -15,7 +15,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
-#include <ImGuizmo/ImGuizmo.h>
+#include <ImGuizmo.h>
 
 #include "imgui_internal.h"
 #include "Rendering/Scene.h"

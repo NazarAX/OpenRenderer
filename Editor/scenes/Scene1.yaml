@@ -1,0 +1,17 @@
+Scene:
+  - Name: Empty
+    Transform:
+      Position: [0, -0.37087208, 1.9089122]
+      Rotation: [0, -0, 0]
+      Scale: [1, 1, 1]
+    Model: C:\Users\Nazarii\source\repos\OpenRenderer\Editor\res\models\Snail.obj
+    Material:
+      Albedo: C:\Users\Nazarii\source\repos\OpenRenderer\Editor\res\textures\snail_color.png
+      Shader: default
+  - Name: Camera
+    Transform:
+      Position: [2.847516, 2.0304987, 1.861764]
+      Rotation: [-35.40002, -195.00009, 0]
+      Scale: [1, 1, 1]
+    Camera:
+      Primary: true

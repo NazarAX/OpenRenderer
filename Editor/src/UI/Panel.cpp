@@ -18,7 +18,7 @@
 #include <type_traits>
 #include <glm/gtc/type_ptr.hpp>
 #include "UI.h"
-#include "ImGuizmo/ImGuizmo.h"
+#include "ImGuizmo.h"
 #include "glm/glm.hpp"
 
 
@@ -116,11 +116,13 @@ namespace UI
                     const char* scenePath = tinyfd_openFileDialog(
                         "Open Scene", "", 3, filters, "YAML Files", 0
                     );
+
                     if (scenePath)
                     {
                         std::shared_ptr<Scene> scene = Serializer::Deserialize(scenePath);
                         Application::GetInstance()->SetScene(scene);
                     }
+
                 }
                 if (ImGui::MenuItem("Save", "Ctrl+S"))
                 {

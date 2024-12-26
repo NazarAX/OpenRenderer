@@ -21,12 +21,11 @@ Application::Application()
     Window::currentWindow = &window;
 
     //DefaultScene
-    scene = Serializer::Deserialize("/Users/nazarii/Desktop/XScene.yaml");
-    selected = scene->GetEntity("Gorilla");
+    scene = Serializer::Deserialize("C:/Users/Nazarii/source/repos/OpenRenderer/Editor/scenes/Scene1.yaml");
+    cameraEntity = scene->GetPrimaryCamera();
 
     frameBuffer = std::make_shared<FrameBuffer>(window.GetWidth(), window.GetHeight());
 
-    cameraEntity = scene->GetPrimaryCamera();
     Camera& camera = scene->AddComponent<Camera>(cameraEntity, true);
     Transform& transform = scene->AddComponent<Transform>(cameraEntity);
     camera.UpdateView(transform);

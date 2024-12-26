@@ -6,7 +6,7 @@ file(GLOB_RECURSE HEADERS "*.h")
 
 
 
-add_library(imgui ${SOURCES} ${HEADERS})
+add_library(imgui STATIC ${SOURCES} ${HEADERS})
 
 target_include_directories(imgui PUBLIC "../GLFW/include")
 

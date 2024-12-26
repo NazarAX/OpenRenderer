@@ -60,6 +60,7 @@ public:
 
     entt::entity GetPrimaryCamera()
     {
+
         for (auto entity : registry.view<Camera>())
         {
             Camera camera = registry.get<Camera>(entity);
@@ -98,6 +99,7 @@ public:
     {
         if (registry.all_of<T>(entity))
             return registry.get<T>(entity);
+
         throw std::runtime_error("Entity does not have the requested component.");
     }
 
